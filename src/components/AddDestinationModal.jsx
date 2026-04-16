@@ -15,6 +15,11 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
     editing ? format(new Date(editing.departure), 'yyyy-MM-dd') : ''
   )
   const [type, setType] = useState(editing?.type || 'vacation')
+  const [airline, setAirline] = useState(editing?.airline || '')
+  const [flightNumber, setFlightNumber] = useState(editing?.flightNumber || '')
+  const [departureTime, setDepartureTime] = useState(editing?.departureTime || '')
+  const [arrivalTime, setArrivalTime] = useState(editing?.arrivalTime || '')
+  const [notes, setNotes] = useState(editing?.notes || '')
   const [error, setError] = useState('')
 
   const validate = () => {
@@ -51,6 +56,11 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       arrival: startOfDay(parseISO(arrival)).toISOString(),
       departure: startOfDay(parseISO(departure)).toISOString(),
       type,
+      ...(airline && { airline }),
+      ...(flightNumber && { flightNumber }),
+      ...(departureTime && { departureTime }),
+      ...(arrivalTime && { arrivalTime }),
+      ...(notes && { notes }),
     }
 
     if (editing) {
@@ -142,6 +152,68 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               ))}
             </div>
           </div>
+
+          {/* Flight details */}
+          <details className="group">
+            <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-500 select-none list-none flex items-center gap-1">
+              <span className="group-open:rotate-90 transition-transform inline-block">›</span>
+              Flight details <span className="text-gray-300">(optional)</span>
+            </summary>
+            <div className="mt-3 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Airline</label>
+                  <input
+                    type="text"
+                    value={airline}
+                    onChange={(e) => setAirline(e.target.value)}
+                    placeholder="e.g. Air France"
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Flight number</label>
+                  <input
+                    type="text"
+                    value={flightNumber}
+                    onChange={(e) => setFlightNumber(e.target.value)}
+                    placeholder="e.g. AF123"
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Departure time</label>
+                  <input
+                    type="time"
+                    value={departureTime}
+                    onChange={(e) => setDepartureTime(e.target.value)}
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Arrival time</label>
+                  <input
+                    type="time"
+                    value={arrivalTime}
+                    onChange={(e) => setArrivalTime(e.target.value)}
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Notes</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Anything else to remember…"
+                  rows={2}
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none"
+                />
+              </div>
+            </div>
+          </details>
 
           {/* Error */}
           {error && (

@@ -10,6 +10,14 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
       ? format(new Date(editing.date), 'yyyy-MM-dd')
       : format(new Date(destination.arrival), 'yyyy-MM-dd')
   )
+  const [address, setAddress] = useState(editing?.address || '')
+  const [phone, setPhone] = useState(editing?.phone || '')
+  const [notes, setNotes] = useState(editing?.notes || '')
+  const [website, setWebsite] = useState(editing?.website || '')
+  const [openingHours, setOpeningHours] = useState(editing?.openingHours || '')
+  const [reservationRef, setReservationRef] = useState(editing?.reservationRef || '')
+  const [doctorName, setDoctorName] = useState(editing?.doctorName || '')
+  const [time, setTime] = useState(editing?.time || '')
   const [error, setError] = useState('')
 
   const arrivalStr = format(new Date(destination.arrival), 'yyyy-MM-dd')
@@ -34,6 +42,14 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
       type,
       name: name.trim() || ACTIVITY_CONFIG[type].label,
       date: startOfDay(parseISO(date)).toISOString(),
+      ...(address && { address: address.trim() }),
+      ...(phone && { phone: phone.trim() }),
+      ...(notes && { notes: notes.trim() }),
+      ...(website && { website: website.trim() }),
+      ...(openingHours && { openingHours: openingHours.trim() }),
+      ...(reservationRef && { reservationRef: reservationRef.trim() }),
+      ...(doctorName && { doctorName: doctorName.trim() }),
+      ...(time && { time }),
     })
   }
 
@@ -115,6 +131,90 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
               className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
             />
           </div>
+
+          {/* Type-specific details */}
+          <details className="group">
+            <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-500 select-none list-none flex items-center gap-1">
+              <span className="group-open:rotate-90 transition-transform inline-block">›</span>
+              More details <span className="text-gray-300">(optional)</span>
+            </summary>
+            <div className="mt-3 space-y-3">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Address</label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Street, City"
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                />
+              </div>
+
+              {type === 'restaurant' && (
+                <>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Phone</label>
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+1 555 000 0000"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Reservation ref</label>
+                    <input type="text" value={reservationRef} onChange={(e) => setReservationRef(e.target.value)}
+                      placeholder="e.g. RES-4921"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                  </div>
+                </>
+              )}
+
+              {(type === 'attraction' || type === 'shopping') && (
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Website</label>
+                  <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="https://…"
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                </div>
+              )}
+
+              {type === 'attraction' && (
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Opening hours</label>
+                  <input type="text" value={openingHours} onChange={(e) => setOpeningHours(e.target.value)}
+                    placeholder="e.g. Mon–Fri 9:00–18:00"
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                </div>
+              )}
+
+              {type === 'medical' && (
+                <>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Doctor / provider</label>
+                    <input type="text" value={doctorName} onChange={(e) => setDoctorName(e.target.value)}
+                      placeholder="Dr. Smith"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Appointment time</label>
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5">Phone</label>
+                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+1 555 000 0000"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Notes</label>
+                <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Anything to remember…" rows={2}
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none" />
+              </div>
+            </div>
+          </details>
 
           {error && <p className="text-xs text-red-400">⚠ {error}</p>}
 

@@ -42,7 +42,7 @@ function groupActivities(activities) {
 }
 
 /** Small activity pin — colored circle with white icon */
-function ActivityPin({ activity, x, onEdit, onDelete }) {
+function ActivityPin({ activity, x, onEdit, onDelete, onSelect }) {
   const [hovered, setHovered] = useState(false)
   const cfg = ACTIVITY_CONFIG[activity.type]
   const PIN_SIZE = 24
@@ -62,6 +62,7 @@ function ActivityPin({ activity, x, onEdit, onDelete }) {
     >
       {/* Circle */}
       <div
+        onClick={() => onSelect?.(activity)}
         style={{
           width: PIN_SIZE,
           height: PIN_SIZE,
@@ -149,6 +150,7 @@ export default function Timeline({
   onUpdateDest, onEditDest, onDeleteDest,
   onEditActivity, onDeleteActivity,
   onEditHotel, onDeleteHotel,
+  onClickDest, onClickHotel, onClickActivity,
 }) {
   const scrollRef = useRef(null)
   const dragState = useRef(null)  // { id, mode, startX, origArrival, origDeparture }
@@ -185,6 +187,7 @@ export default function Timeline({
       startX: e.clientX,
       origArrival: startOfDay(new Date(dest.arrival)),
       origDeparture: startOfDay(new Date(dest.departure)),
+      hasMoved: false,
     }
     setDragId(dest.id)
     setDragMode(mode)
@@ -194,6 +197,9 @@ export default function Timeline({
 
   const handleMouseMove = useCallback((e) => {
     if (!dragState.current) return
+    if (Math.abs(e.clientX - dragState.current.startX) > 3) {
+      dragState.current.hasMoved = true
+    }
     const { id, mode, startX, origArrival, origDeparture } = dragState.current
     const deltaDays = Math.round((e.clientX - startX) / DAY_WIDTH)
     const others = destinations.filter((d) => d.id !== id)
@@ -238,12 +244,16 @@ export default function Timeline({
   }, [destinations, onUpdateDest])
 
   const handleMouseUp = useCallback(() => {
+    if (dragState.current && !dragState.current.hasMoved && dragState.current.mode === 'move') {
+      const dest = destinations.find((d) => d.id === dragState.current.id)
+      if (dest && onClickDest) onClickDest(dest)
+    }
     dragState.current = null
     setDragId(null)
     setDragMode(null)
     document.body.style.cursor = ''
     document.body.classList.remove('dragging')
-  }, [])
+  }, [destinations, onClickDest])
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove)
@@ -499,6 +509,7 @@ export default function Timeline({
                           x={0}
                           onEdit={onEditActivity}
                           onDelete={onDeleteActivity}
+                          onSelect={onClickActivity}
                         />
                       </div>
                     ))
@@ -542,10 +553,11 @@ export default function Timeline({
                         background: '#fafaf9', border: '1px solid #d6d3d1', borderRadius: 8,
                         display: 'flex', alignItems: 'center', gap: 7,
                         paddingLeft: 10, paddingRight: isHovering ? 68 : 10,
-                        cursor: 'default', zIndex: 2,
+                        cursor: 'pointer', zIndex: 2,
                         boxShadow: isHovering ? '0 2px 6px rgba(0,0,0,0.05)' : 'none',
                         transition: 'box-shadow 0.15s',
                       }}
+                      onClick={() => onClickHotel?.(hotel)}
                       onMouseEnter={() => setHoverHotelId(hotel.id)}
                       onMouseLeave={() => setHoverHotelId(null)}
                     >
@@ -561,11 +573,11 @@ export default function Timeline({
                       {isHovering && (
                         <div style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: 3 }}>
                           <button
-                            onClick={() => onEditHotel(hotel)}
+                            onClick={(e) => { e.stopPropagation(); onEditHotel(hotel) }}
                             style={{ fontSize: 11, color: '#78716c', padding: '3px 6px', borderRadius: 4, border: '1px solid #d6d3d1', background: 'white', cursor: 'pointer' }}
                           >Edit</button>
                           <button
-                            onClick={() => onDeleteHotel(hotel.id)}
+                            onClick={(e) => { e.stopPropagation(); onDeleteHotel(hotel.id) }}
                             style={{ fontSize: 12, color: '#f87171', padding: '2px 6px', borderRadius: 4, border: '1px solid #fecaca', background: 'white', cursor: 'pointer', lineHeight: 1.4 }}
                           >✕</button>
                         </div>

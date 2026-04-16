@@ -5,12 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev       # Start Vite dev server with hot reload
-npm run build     # Production build to /dist
-npm run preview   # Preview production build locally
+npm run dev         # Start Vite dev server with hot reload
+npm run build       # Production build to /dist
+npm run preview     # Preview production build locally
+npm test            # Run Vitest test suite (once)
+npm run test:watch  # Run Vitest in watch mode
 ```
 
-No test runner is configured. No linter is configured.
+No linter is configured.
 
 ## Architecture
 
@@ -38,6 +40,12 @@ The timeline is **not** DOM/React component-based — it uses absolute positioni
 
 Activities render as small colored pins below their destination row. Overlap detection runs on every drag-end to prevent conflicting date ranges.
 
+### Detail Card (DetailCard.jsx)
+
+A slide-over panel (fixed right, 320px wide) that opens when clicking a timeline item. `App.jsx` holds `selectedItem: { kind, data, activities?, hotels?, destination? }`. Clicking a destination block, hotel block, or activity pin fires `onClickDest`/`onClickHotel`/`onClickActivity` from `Timeline.jsx`, which sets this state. The card's "Edit" button calls `handleDetailEdit` in `App.jsx`, which opens the relevant CRUD modal and clears `selectedItem`.
+
+**Click vs drag disambiguation** (Timeline.jsx): `dragState.current.hasMoved` is set to `true` on the first `mousemove` event exceeding 3px. On `mouseup`, if `hasMoved` is false and mode is `move`, the event is treated as a click, not a drag.
+
 ### City Search (CitySearch.jsx)
 
 Queries the Nominatim OpenStreetMap API (no auth required). Results are debounced (300ms, minimum 2 chars) and deduplicated by city+country. Flag emojis come from `flagcdn.com`. This is the only external network dependency at runtime.
@@ -49,6 +57,12 @@ Three export modes:
 - **Google Calendar**: Generates per-item template URLs (opened in new tabs)
 - **PDF/Print**: Opens a print window with styled HTML; uses `@media print` CSS with `color-adjust: exact`
 
+### Testing
+
+Vitest + `@testing-library/react` + jsdom. Test files live in `src/components/__tests__/`. Test setup is in `src/test-setup.js` (imports `@testing-library/jest-dom`). Vitest is configured in `vite.config.js` under the `test` key.
+
+The `Section` component in `DetailCard.jsx` cannot inspect whether its React children will render null — to conditionally render a section based on optional data, guard with an explicit check on the data values before rendering the `Section` wrapper.
+
 ### Activity Types (Icons.jsx)
 
 `ACTIVITY_CONFIG` defines the four activity types with colors and SVG icons:
@@ -58,6 +72,13 @@ Three export modes:
 - `medical` → red `#ef4444`
 
 All SVG icons are defined inline in `Icons.jsx`.
+
+### Optional Fields per Entity
+
+All new fields are optional and stored only when non-empty (spread with `&&` before saving):
+- **Destination**: `airline`, `flightNumber`, `departureTime`, `arrivalTime`, `notes`
+- **Hotel**: `address`, `confirmationNumber`, `bookingUrl`
+- **Activity (all)**: `address`, `notes`; **restaurant**: `phone`, `reservationRef`; **attraction/shopping**: `website`; **attraction**: `openingHours`; **medical**: `doctorName`, `time`, `phone`
 
 ## Key Conventions
 

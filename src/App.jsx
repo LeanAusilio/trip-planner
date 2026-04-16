@@ -5,6 +5,7 @@ import AddDestinationModal from './components/AddDestinationModal'
 import ActivityModal from './components/ActivityModal'
 import HotelModal from './components/HotelModal'
 import ExportModal from './components/ExportModal'
+import DetailCard from './components/DetailCard'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon } from './components/Icons'
 
@@ -36,6 +37,8 @@ export default function App() {
   // Modals: { type: 'destination'|'activity'|'hotel', editing: obj|null, context: obj|null }
   const [modal, setModal] = useState(null)
   const [showExport, setShowExport] = useState(false)
+  // Detail card: { kind: 'destination'|'hotel'|'activity', data, activities?, hotels?, destination? }
+  const [selectedItem, setSelectedItem] = useState(null)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ destinations, hotels, activities }))
@@ -75,6 +78,37 @@ export default function App() {
     setModal(null)
   }
   const deleteActivity = (id) => setActivities((prev) => prev.filter((a) => a.id !== id))
+
+  // ── Detail card helpers ──
+  const openDestCard = (dest) => {
+    const destActivities = activities.filter((a) => a.destinationId === dest.id)
+    const destHotels = hotels.filter((h) => {
+      const hIn  = new Date(h.checkIn)
+      const hOut = new Date(h.checkOut)
+      const arr  = new Date(dest.arrival)
+      const dep  = new Date(dest.departure)
+      return hIn < dep && hOut > arr
+    })
+    setSelectedItem({ kind: 'destination', data: dest, activities: destActivities, hotels: destHotels })
+  }
+  const openHotelCard = (hotel) => setSelectedItem({ kind: 'hotel', data: hotel })
+  const openActivityCard = (act) => {
+    const dest = destinations.find((d) => d.id === act.destinationId)
+    setSelectedItem({ kind: 'activity', data: act, destination: dest })
+  }
+
+  const handleDetailEdit = () => {
+    if (!selectedItem) return
+    if (selectedItem.kind === 'destination') {
+      setModal({ type: 'destination', editing: selectedItem.data })
+    } else if (selectedItem.kind === 'hotel') {
+      setModal({ type: 'hotel', editing: selectedItem.data })
+    } else if (selectedItem.kind === 'activity') {
+      const dest = selectedItem.destination
+      setModal({ type: 'activity', editing: selectedItem.data, context: dest })
+    }
+    setSelectedItem(null)
+  }
 
   // ── Stats ──
   const totalNights = destinations.reduce(
@@ -166,6 +200,9 @@ export default function App() {
                 onDeleteActivity={deleteActivity}
                 onEditHotel={(hotel) => setModal({ type: 'hotel', editing: hotel })}
                 onDeleteHotel={deleteHotel}
+                onClickDest={openDestCard}
+                onClickHotel={openHotelCard}
+                onClickActivity={openActivityCard}
               />
             </section>
 
@@ -358,6 +395,11 @@ export default function App() {
           onClose={() => setShowExport(false)}
         />
       )}
+      <DetailCard
+        item={selectedItem}
+        onClose={() => setSelectedItem(null)}
+        onEdit={handleDetailEdit}
+      />
     </div>
   )
 }

@@ -10,6 +10,9 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
   const [checkOut, setCheckOut] = useState(
     editing ? format(new Date(editing.checkOut), 'yyyy-MM-dd') : ''
   )
+  const [address, setAddress] = useState(editing?.address || '')
+  const [confirmationNumber, setConfirmationNumber] = useState(editing?.confirmationNumber || '')
+  const [bookingUrl, setBookingUrl] = useState(editing?.bookingUrl || '')
   const [error, setError] = useState('')
 
   const validate = () => {
@@ -40,6 +43,9 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
       name: name.trim(),
       checkIn: startOfDay(parseISO(checkIn)).toISOString(),
       checkOut: startOfDay(parseISO(checkOut)).toISOString(),
+      ...(address && { address: address.trim() }),
+      ...(confirmationNumber && { confirmationNumber: confirmationNumber.trim() }),
+      ...(bookingUrl && { bookingUrl: bookingUrl.trim() }),
     })
   }
 
@@ -99,6 +105,46 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
               />
             </div>
           </div>
+
+          {/* Extra details */}
+          <details className="group">
+            <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-500 select-none list-none flex items-center gap-1">
+              <span className="group-open:rotate-90 transition-transform inline-block">›</span>
+              More details <span className="text-gray-300">(optional)</span>
+            </summary>
+            <div className="mt-3 space-y-3">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Address</label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Street, City"
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Confirmation number</label>
+                <input
+                  type="text"
+                  value={confirmationNumber}
+                  onChange={(e) => setConfirmationNumber(e.target.value)}
+                  placeholder="e.g. HTL-123456"
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Booking link</label>
+                <input
+                  type="url"
+                  value={bookingUrl}
+                  onChange={(e) => setBookingUrl(e.target.value)}
+                  placeholder="https://…"
+                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                />
+              </div>
+            </div>
+          </details>
 
           {error && <p className="text-xs text-red-400">⚠ {error}</p>}
 

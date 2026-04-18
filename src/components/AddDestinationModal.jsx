@@ -54,6 +54,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       city: city.city,
       country: city.country,
       countryCode: city.countryCode,
+      ...(city.lat != null && { lat: city.lat, lng: city.lng }),
       arrival: startOfDay(parseISO(arrival)).toISOString(),
       departure: startOfDay(parseISO(departure)).toISOString(),
       type,

@@ -67,7 +67,9 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
               r.name
             const country = addr.country || ''
             const countryCode = (addr.country_code || '').toUpperCase()
-            return { city, country, countryCode }
+            const lat = parseFloat(r.lat)
+            const lng = parseFloat(r.lon)
+            return { city, country, countryCode, lat, lng }
           })
           .filter((r) => {
             if (!r.city || !r.countryCode) return false

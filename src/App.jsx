@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { uuid } from './lib/uuid'
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import Timeline from './components/Timeline'
 import AddDestinationModal from './components/AddDestinationModal'
@@ -34,7 +35,7 @@ const STORAGE_KEY = 'trip-planner-v3'
 
 function makeTrip(name, data = {}) {
   return {
-    id: crypto.randomUUID(),
+    id: uuid(),
     name,
     createdAt: new Date().toISOString(),
     destinations: data.destinations || [],
@@ -126,7 +127,7 @@ export default function App() {
 
   // ── Destinations ──
   const addDestination = (dest) => {
-    updateActiveTrip({ destinations: sortByDate([...destinations, { ...dest, id: crypto.randomUUID() }], 'arrival') })
+    updateActiveTrip({ destinations: sortByDate([...destinations, { ...dest, id: uuid() }], 'arrival') })
     setModal(null)
   }
   const updateDestination = (id, updates) => {
@@ -141,7 +142,7 @@ export default function App() {
 
   // ── Hotels ──
   const addHotel = (hotel) => {
-    updateActiveTrip({ hotels: sortByDate([...hotels, { ...hotel, id: crypto.randomUUID() }], 'checkIn') })
+    updateActiveTrip({ hotels: sortByDate([...hotels, { ...hotel, id: uuid() }], 'checkIn') })
     setModal(null)
   }
   const updateHotel = (id, updates) => {
@@ -155,7 +156,7 @@ export default function App() {
     if (data.id) {
       updateActiveTrip({ transports: sortByDate(transports.map((t) => (t.id === data.id ? { ...t, ...data } : t)), 'departureDate') })
     } else {
-      updateActiveTrip({ transports: sortByDate([...transports, { ...data, id: crypto.randomUUID() }], 'departureDate') })
+      updateActiveTrip({ transports: sortByDate([...transports, { ...data, id: uuid() }], 'departureDate') })
     }
     setModal(null)
   }
@@ -166,7 +167,7 @@ export default function App() {
     if (data.id) {
       updateActiveTrip({ activities: activities.map((a) => (a.id === data.id ? { ...a, ...data } : a)) })
     } else {
-      updateActiveTrip({ activities: [...activities, { ...data, id: crypto.randomUUID() }] })
+      updateActiveTrip({ activities: [...activities, { ...data, id: uuid() }] })
     }
     setModal(null)
   }
@@ -174,7 +175,7 @@ export default function App() {
 
   // ── Packing list ──
   const addPackingItem = (text) => {
-    updateActiveTrip({ packingList: [...packingList, { id: crypto.randomUUID(), text, checked: false }] })
+    updateActiveTrip({ packingList: [...packingList, { id: uuid(), text, checked: false }] })
   }
   const togglePackingItem = (id) => {
     updateActiveTrip({ packingList: packingList.map((i) => (i.id === id ? { ...i, checked: !i.checked } : i)) })

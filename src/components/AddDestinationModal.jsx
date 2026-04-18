@@ -122,7 +122,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               <input
                 type="date"
                 value={departure}
-                min={arrival || undefined}
+
                 onChange={(e) => { setDeparture(e.target.value); setError('') }}
                 className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
               />

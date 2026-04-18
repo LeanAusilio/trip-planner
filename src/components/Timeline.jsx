@@ -247,8 +247,7 @@ export default function Timeline({
       }
     } else if (mode === 'resize-left') {
       const newArrival = addDays(origArrival, deltaDays)
-      // Must remain at least 1 day before departure
-      if (newArrival >= origDeparture) return
+      if (newArrival > origDeparture) return
       const hasOverlap = others.some((d) => {
         const dA = startOfDay(new Date(d.arrival))
         const dD = startOfDay(new Date(d.departure))
@@ -259,8 +258,7 @@ export default function Timeline({
       }
     } else if (mode === 'resize-right') {
       const newDeparture = addDays(origDeparture, deltaDays)
-      // Must remain at least 1 day after arrival
-      if (newDeparture <= origArrival) return
+      if (newDeparture < origArrival) return
       const hasOverlap = others.some((d) => {
         const dA = startOfDay(new Date(d.arrival))
         const dD = startOfDay(new Date(d.departure))

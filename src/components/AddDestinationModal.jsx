@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { format, parseISO, startOfDay, isBefore, isEqual } from 'date-fns'
+import { format, parseISO, startOfDay } from 'date-fns'
 import CitySearch from './CitySearch'
 
 export default function AddDestinationModal({ editing, destinations, onAdd, onUpdate, onClose }) {
@@ -30,7 +30,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
     if (!departure) return 'Please set a departure date'
     const arr = startOfDay(parseISO(arrival))
     const dep = startOfDay(parseISO(departure))
-    if (!isBefore(arr, dep)) return 'Departure must be after arrival'
+    if (dep < arr) return 'Departure cannot be before arrival'
 
     const others = editing ? destinations.filter((d) => d.id !== editing.id) : destinations
     const overlaps = others.some((d) => {

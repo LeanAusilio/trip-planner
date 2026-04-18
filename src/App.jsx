@@ -7,6 +7,7 @@ import HotelModal from './components/HotelModal'
 import TransportModal from './components/TransportModal'
 import ExportModal from './components/ExportModal'
 import DetailCard from './components/DetailCard'
+import SummaryDashboard from './components/SummaryDashboard'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './components/Icons'
 
@@ -450,6 +451,14 @@ export default function App() {
                 </div>
               </section>
             )}
+
+            {/* ── Summary dashboard ── */}
+            <SummaryDashboard
+              destinations={destinations}
+              hotels={hotels}
+              activities={activities}
+              transports={transports}
+            />
 
             {/* ── Transport list ── */}
             {transports.length > 0 && (

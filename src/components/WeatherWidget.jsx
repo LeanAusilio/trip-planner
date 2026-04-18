@@ -54,19 +54,19 @@ function WeatherCard({ dest }) {
     <div className="border border-gray-100 dark:border-gray-800 rounded-xl p-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex-shrink-0">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{dest.city}</span>
-        <span className="text-xs text-gray-400 dark:text-gray-500">~{avgMax}°C</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">~{avgMax}°C</span>
       </div>
       <div className="flex gap-2">
         {days.map((day, i) => {
           const info = weatherInfo(day.code)
           return (
             <div key={i} className="flex flex-col items-center gap-0.5 min-w-[36px]">
-              <span className="text-xs text-gray-400 dark:text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {day.date.toLocaleDateString('en', { weekday: 'short' }).slice(0, 2)}
               </span>
               <span className="text-lg leading-tight" title={info.label}>{info.icon}</span>
               <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{day.max}°</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">{day.min}°</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{day.min}°</span>
             </div>
           )
         })}

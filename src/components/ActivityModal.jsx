@@ -74,12 +74,12 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
             ✕
           </button>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">{destination.city}, {destination.country}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-5">{destination.city}, {destination.country}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-2">Type</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-2">Type</label>
             <div className="grid grid-cols-4 gap-2">
               {Object.entries(ACTIVITY_CONFIG).map(([key, cfg]) => {
                 const selected = type === key
@@ -92,7 +92,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
                     className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border transition-all ${
                       selected
                         ? 'text-white'
-                        : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:border-gray-300'
+                        : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
                     <span style={selected ? {} : { filter: 'grayscale(1)', opacity: 0.5 }}>
@@ -109,7 +109,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
 
           {/* Name */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
               Name <span className="text-gray-300">(optional)</span>
             </label>
             <input
@@ -123,7 +123,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
 
           {/* Date */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Date</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Date</label>
             <input
               type="date"
               value={date}
@@ -142,7 +142,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
             </summary>
             <div className="mt-3 space-y-3">
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Address</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Address</label>
                 <input
                   type="text"
                   value={address}
@@ -155,13 +155,13 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
               {type === 'restaurant' && (
                 <>
                   <div>
-                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Phone</label>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Phone</label>
                     <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                       placeholder="+1 555 000 0000"
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Reservation ref</label>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Reservation ref</label>
                     <input type="text" value={reservationRef} onChange={(e) => setReservationRef(e.target.value)}
                       placeholder="e.g. RES-4921"
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
@@ -171,7 +171,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
 
               {(type === 'attraction' || type === 'shopping') && (
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Website</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Website</label>
                   <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://…"
                     className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
@@ -180,7 +180,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
 
               {type === 'attraction' && (
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Opening hours</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Opening hours</label>
                   <input type="text" value={openingHours} onChange={(e) => setOpeningHours(e.target.value)}
                     placeholder="e.g. Mon–Fri 9:00–18:00"
                     className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
@@ -190,18 +190,18 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
               {type === 'medical' && (
                 <>
                   <div>
-                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Doctor / provider</label>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Doctor / provider</label>
                     <input type="text" value={doctorName} onChange={(e) => setDoctorName(e.target.value)}
                       placeholder="Dr. Smith"
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Appointment time</label>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Appointment time</label>
                     <input type="time" value={time} onChange={(e) => setTime(e.target.value)}
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Phone</label>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Phone</label>
                     <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                       placeholder="+1 555 000 0000"
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
@@ -210,7 +210,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
               )}
 
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Budget</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Budget</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
                   <input
@@ -225,7 +225,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Notes</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Notes</label>
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Anything to remember…" rows={2}
                   className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none" />
@@ -239,7 +239,7 @@ export default function ActivityModal({ destination, editing, onSave, onClose })
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>

@@ -75,7 +75,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Hotel name</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Hotel name</label>
             <input
               type="text"
               value={name}
@@ -88,7 +88,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Check-in</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Check-in</label>
               <input
                 type="date"
                 value={checkIn}
@@ -97,7 +97,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Check-out</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Check-out</label>
               <input
                 type="date"
                 value={checkOut}
@@ -116,7 +116,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
             </summary>
             <div className="mt-3 space-y-3">
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Address</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Address</label>
                 <input
                   type="text"
                   value={address}
@@ -126,7 +126,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Confirmation number</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Confirmation number</label>
                 <input
                   type="text"
                   value={confirmationNumber}
@@ -136,7 +136,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Booking link</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Booking link</label>
                 <input
                   type="url"
                   value={bookingUrl}
@@ -146,7 +146,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Budget</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Budget</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
                   <input
@@ -169,7 +169,7 @@ export default function HotelModal({ editing, hotels, onSave, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>

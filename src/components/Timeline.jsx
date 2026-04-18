@@ -733,7 +733,7 @@ export default function Timeline({
             <span className="text-xs text-gray-500">{cfg.label}</span>
           </div>
         ))}
-        <span className="text-xs text-gray-400 ml-auto">Drag to move · drag edges to resize</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">Drag to move · drag edges to resize</span>
       </div>
     </div>
   )

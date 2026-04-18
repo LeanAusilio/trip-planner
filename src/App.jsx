@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import Timeline from './components/Timeline'
 import AddDestinationModal from './components/AddDestinationModal'
@@ -42,6 +42,7 @@ function makeTrip(name, data = {}) {
     activities: data.activities || [],
     transports: data.transports || [],
     packingList: data.packingList || [],
+    currency: data.currency || 'USD',
   }
 }
 
@@ -89,13 +90,15 @@ export default function App() {
 
   // ── Active trip helpers ──
   const activeTrip = trips.find((t) => t.id === activeTripId) || trips[0]
-  const { destinations, hotels, activities, transports, packingList } = activeTrip || {
-    destinations: [], hotels: [], activities: [], transports: [], packingList: [],
+  const { destinations, hotels, activities, transports, packingList, currency: tripCurrency = 'USD' } = activeTrip || {
+    destinations: [], hotels: [], activities: [], transports: [], packingList: [], currency: 'USD',
   }
 
   const updateActiveTrip = useCallback((updates) => {
     setTrips((prev) => prev.map((t) => (t.id === activeTripId ? { ...t, ...updates } : t)))
   }, [activeTripId])
+
+  const setCurrency = useCallback((c) => updateActiveTrip({ currency: c }), [updateActiveTrip])
 
   // ── Trip management ──
   const addTrip = (name) => {
@@ -547,7 +550,7 @@ export default function App() {
             )}
 
             {/* Summary dashboard */}
-            <SummaryDashboard destinations={destinations} hotels={hotels} activities={activities} transports={transports} />
+            <SummaryDashboard destinations={destinations} hotels={hotels} activities={activities} transports={transports} currency={tripCurrency} onCurrencyChange={setCurrency} />
           </>
         )}
       </main>

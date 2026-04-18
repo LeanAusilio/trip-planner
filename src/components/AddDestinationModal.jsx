@@ -101,7 +101,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* City */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">City</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">City</label>
             <CitySearch
               value={city}
               onChange={(c) => { setCity(c); setError('') }}
@@ -112,7 +112,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Arrival</label>
               <input
                 type="date"
                 value={arrival}
@@ -121,7 +121,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Departure</label>
               <input
                 type="date"
                 value={departure}
@@ -134,7 +134,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
 
           {/* Type */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Type</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Type</label>
             <div className="flex gap-2">
               {[
                 { key: 'vacation', label: 'Vacation' },
@@ -149,7 +149,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                       ? key === 'vacation'
                         ? 'bg-sky-50 border-sky-200 text-sky-700 font-medium'
                         : 'bg-violet-50 border-violet-200 text-violet-700 font-medium'
-                      : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:border-gray-300 hover:text-gray-500'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 hover:text-gray-500'
                   }`}
                 >
                   {label}
@@ -160,7 +160,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
 
           {/* Budget */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
               Budget <span className="text-gray-300">(optional)</span>
             </label>
             <div className="relative">
@@ -186,7 +186,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
             <div className="mt-3 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Airline</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Airline</label>
                   <input
                     type="text"
                     value={airline}
@@ -196,7 +196,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Flight number</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Flight number</label>
                   <input
                     type="text"
                     value={flightNumber}
@@ -208,7 +208,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure time</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Departure time</label>
                   <input
                     type="time"
                     value={departureTime}
@@ -217,7 +217,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival time</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Arrival time</label>
                   <input
                     type="time"
                     value={arrivalTime}
@@ -227,7 +227,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Notes</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Notes</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -251,7 +251,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>

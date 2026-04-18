@@ -27,13 +27,13 @@ export default function MapView({ destinations, dark }) {
         className="flex items-center justify-between mb-3 cursor-pointer select-none"
         onClick={() => setOpen((o) => !o)}
       >
-        <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
+        <h2 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
           <span>🗺</span> Route Map
-          <span className="normal-case text-gray-300 dark:text-gray-600 font-normal tracking-normal">
+          <span className="normal-case text-gray-500 dark:text-gray-400 font-normal tracking-normal">
             {mapped.length} destination{mapped.length !== 1 ? 's' : ''}
           </span>
         </h2>
-        <span className="text-xs text-gray-300 dark:text-gray-600">{open ? '▲' : '▼'}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{open ? '▲' : '▼'}</span>
       </div>
 
       {open && (

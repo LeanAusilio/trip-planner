@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import {
   format, addDays, differenceInDays, startOfDay,
   isSameDay, eachMonthOfInterval,
@@ -192,7 +192,7 @@ export default function Timeline({
   const today = startOfDay(new Date())
   const todayOffset = differenceInDays(today, startDate)
 
-  const activityMap = groupActivities(activities)
+  const activityMap = useMemo(() => groupActivities(activities), [activities])
 
   // Scroll to show today on mount
   const scrollToToday = () => {
@@ -202,6 +202,8 @@ export default function Timeline({
     }
   }
 
+  // Intentionally runs once on mount only — dayWidth/todayOffset change on zoom
+  // but we don't want to re-scroll when the user is actively navigating
   useEffect(() => { scrollToToday() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const dateToX = (date) => differenceInDays(startOfDay(new Date(date)), startDate) * dayWidth
@@ -270,6 +272,8 @@ export default function Timeline({
     }
   }, [destinations, onUpdateDest])
 
+  // A mouseup with hasMoved=false and mode='move' means the user clicked without
+  // dragging — treat it as a selection rather than a completed drag.
   const handleMouseUp = useCallback(() => {
     if (dragState.current && !dragState.current.hasMoved && dragState.current.mode === 'move') {
       const dest = destinations.find((d) => d.id === dragState.current.id)

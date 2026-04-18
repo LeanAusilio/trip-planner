@@ -33,6 +33,8 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
     if (dep < arr) return 'Departure cannot be before arrival'
 
     const others = editing ? destinations.filter((d) => d.id !== editing.id) : destinations
+    // Strict inequalities intentionally allow shared boundary days (e.g. depart
+    // city A and arrive city B on the same day without triggering an overlap).
     const overlaps = others.some((d) => {
       const dArr = startOfDay(new Date(d.arrival))
       const dDep = startOfDay(new Date(d.departure))

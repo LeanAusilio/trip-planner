@@ -52,7 +52,8 @@ function loadState() {
       const s = JSON.parse(v3)
       if (s.trips && s.trips.length > 0) return s
     }
-    // Migrate from v2
+    // v2 stored a flat { destinations, hotels, activities, transports } object.
+    // Wrap it in a single trip so existing user data is preserved on first load.
     const v2 = localStorage.getItem('trip-planner-v2')
     if (v2) {
       const s = JSON.parse(v2)
@@ -71,9 +72,8 @@ function sortByDate(arr, field) {
 // ── App ────────────────────────────────────────────────────────────────────
 export default function App() {
   const [dark, setDark] = useDarkMode()
-  const initial = loadState()
-  const [trips, setTrips] = useState(initial.trips)
-  const [activeTripId, setActiveTripId] = useState(initial.activeTripId || initial.trips[0]?.id)
+  const [trips, setTrips] = useState(() => loadState().trips)
+  const [activeTripId, setActiveTripId] = useState(() => { const s = loadState(); return s.activeTripId || s.trips[0]?.id })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const [modal, setModal] = useState(null)

@@ -1,4 +1,5 @@
 import { differenceInDays, startOfDay, format } from 'date-fns'
+import { useMemo } from 'react'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
 import { Flag } from './CitySearch'
 
@@ -29,7 +30,7 @@ export default function SummaryDashboard({ destinations, hotels, activities, tra
   if (!hasBudget || destinations.length === 0) return null
 
   // ── Per-destination breakdown ──────────────────────────────────────────────
-  const destRows = destinations.map((dest) => {
+  const destRows = useMemo(() => destinations.map((dest) => {
     const nights = differenceInDays(
       startOfDay(new Date(dest.departure)),
       startOfDay(new Date(dest.arrival))
@@ -53,7 +54,7 @@ export default function SummaryDashboard({ destinations, hotels, activities, tra
     const perDay   = nights > 0 ? total / nights : total
 
     return { dest, nights, destBudget, hotelCost, actCost, total, perDay }
-  })
+  }), [destinations, hotels, activities])
 
   const transportTotal = transports.reduce((s, t) => s + (t.budget ?? 0), 0)
   const grandTotal     = destRows.reduce((s, r) => s + r.total, 0) + transportTotal

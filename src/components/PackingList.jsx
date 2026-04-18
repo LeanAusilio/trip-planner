@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { SuitcaseIcon } from './Icons'
 
-export default function PackingList({ items, onAdd, onToggle, onDelete, onClearChecked }) {
+export default function PackingList({ items, onAdd, onToggle, onDelete, onClearChecked, dark }) {
   const [input, setInput] = useState('')
   const [open, setOpen] = useState(true)
 
@@ -15,14 +16,14 @@ export default function PackingList({ items, onAdd, onToggle, onDelete, onClearC
   }
 
   return (
-    <section className="mt-8">
+    <section>
       {/* Header */}
       <div
         className="flex items-center justify-between mb-3 cursor-pointer select-none"
         onClick={() => setOpen((o) => !o)}
       >
         <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
-          <span>☑</span> Packing List
+          <SuitcaseIcon size={12} color={dark ? 'white' : 'black'} /> Packing List
           {totalCount > 0 && (
             <span className="normal-case text-gray-300 dark:text-gray-600 font-normal tracking-normal">
               {checkedCount}/{totalCount}

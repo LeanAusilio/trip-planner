@@ -47,6 +47,13 @@ body {
   color-scheme: dark;
 }
 
+/* Two-column layout: full width on mobile, split width on desktop */
+@media (max-width: 1023px) {
+  .two-col-left {
+    width: 100% !important;
+  }
+}
+
 .dark input::placeholder,
 .dark textarea::placeholder {
   color: #6b7280;

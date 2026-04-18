@@ -13,7 +13,7 @@ import WeatherWidget from './components/WeatherWidget'
 import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
 import { Flag } from './components/CitySearch'
-import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './components/Icons'
+import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -79,6 +79,8 @@ export default function App() {
   const [modal, setModal] = useState(null)
   const [showExport, setShowExport] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
+  const [destSplit, setDestSplit] = useState(63) // % width of destinations column on desktop
+  const twoColRef = useRef(null)
 
   // Persist
   useEffect(() => {
@@ -197,6 +199,25 @@ export default function App() {
     setSelectedItem({ kind: 'activity', data: act, destination: dest })
   }
   const openTransportCard = (transport) => setSelectedItem({ kind: 'transport', data: transport })
+
+  const startResizeDrag = useCallback((e) => {
+    e.preventDefault()
+    const container = twoColRef.current
+    if (!container) return
+    const onMove = (e) => {
+      const rect = container.getBoundingClientRect()
+      const pct = Math.round(Math.min(Math.max(((e.clientX - rect.left) / rect.width) * 100, 35), 80))
+      setDestSplit(pct)
+    }
+    const onUp = () => {
+      document.body.style.cursor = ''
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    document.body.style.cursor = 'col-resize'
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [])
 
   const handleDetailEdit = () => {
     if (!selectedItem) return
@@ -371,10 +392,18 @@ export default function App() {
             {/* Map */}
             <MapView destinations={destinations} dark={dark} />
 
+            {/* Destinations + Packing list — side by side with drag-resize handle */}
+            <div ref={twoColRef} className="flex flex-col lg:flex-row items-start mb-8">
+
             {/* Destination list */}
             {destinations.length > 0 && (
-              <section className="mb-8">
-                <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-3">Destinations</h2>
+              <section
+                className="two-col-left w-full flex-shrink-0"
+                style={{ width: `${destSplit}%` }}
+              >
+                <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <PlaneIcon size={12} color={dark ? 'white' : 'black'} /> Destinations
+                </h2>
                 <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                   {destinations.map((dest, idx) => {
                     const nights = differenceInDays(startOfDay(new Date(dest.departure)), startOfDay(new Date(dest.arrival)))
@@ -429,6 +458,28 @@ export default function App() {
                 </div>
               </section>
             )}
+
+            {/* Drag handle */}
+            <div
+              onMouseDown={startResizeDrag}
+              className="hidden lg:flex w-5 self-stretch items-center justify-center cursor-col-resize flex-shrink-0 group"
+            >
+              <div className="w-px h-full bg-gray-100 dark:bg-gray-800 group-hover:bg-gray-300 dark:group-hover:bg-gray-600 transition-colors rounded-full" />
+            </div>
+
+            {/* Packing list */}
+            <div className="w-full lg:flex-1 min-w-0 mt-8 lg:mt-0">
+              <PackingList
+                items={packingList}
+                onAdd={addPackingItem}
+                onToggle={togglePackingItem}
+                onDelete={deletePackingItem}
+                onClearChecked={clearPackingChecked}
+                dark={dark}
+              />
+            </div>
+
+            </div>{/* end two-col */}
 
             {/* Hotel list */}
             {hotels.length > 0 && (
@@ -497,15 +548,6 @@ export default function App() {
 
             {/* Summary dashboard */}
             <SummaryDashboard destinations={destinations} hotels={hotels} activities={activities} transports={transports} />
-
-            {/* Packing list */}
-            <PackingList
-              items={packingList}
-              onAdd={addPackingItem}
-              onToggle={togglePackingItem}
-              onDelete={deletePackingItem}
-              onClearChecked={clearPackingChecked}
-            />
           </>
         )}
       </main>

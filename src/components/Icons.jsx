@@ -64,6 +64,66 @@ export function BedIcon({ size = 14, color = 'currentColor' }) {
   )
 }
 
+export const TRANSPORT_CONFIG = {
+  flight: { label: 'Flight', color: '#3b82f6', lightBg: '#eff6ff', lightBorder: '#bfdbfe' },
+  train:  { label: 'Train',  color: '#10b981', lightBg: '#f0fdf4', lightBorder: '#a7f3d0' },
+  bus:    { label: 'Bus',    color: '#f59e0b', lightBg: '#fffbeb', lightBorder: '#fde68a' },
+  ferry:  { label: 'Ferry',  color: '#06b6d4', lightBg: '#ecfeff', lightBorder: '#a5f3fc' },
+  car:    { label: 'Car',    color: '#8b5cf6', lightBg: '#f5f3ff', lightBorder: '#ddd6fe' },
+}
+
+export function TransportIcon({ type, size = 14, color = 'white' }) {
+  const s = {
+    width: size, height: size, viewBox: '0 0 24 24',
+    fill: 'none', stroke: color,
+    strokeLinecap: 'round', strokeLinejoin: 'round',
+  }
+
+  if (type === 'flight') return (
+    <svg {...s} strokeWidth="1.8">
+      <path d="M22 16.5l-9.5-9.5-1.5 3.5-7-2 2.5 2.5-2 4.5 3.5-1 1 3 3.5-3.5 1.5 3 3.5-1.5z" />
+    </svg>
+  )
+
+  if (type === 'train') return (
+    <svg {...s} strokeWidth="1.8">
+      <rect x="4" y="3" width="16" height="13" rx="3" />
+      <path d="M4 11h16" />
+      <path d="M8 16l-2 3M16 16l2 3" />
+      <path d="M9 7h6" />
+    </svg>
+  )
+
+  if (type === 'bus') return (
+    <svg {...s} strokeWidth="1.8">
+      <rect x="3" y="4" width="18" height="13" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M8 17v2M16 17v2" />
+      <circle cx="8" cy="19" r="1" fill={color} stroke="none" />
+      <circle cx="16" cy="19" r="1" fill={color} stroke="none" />
+    </svg>
+  )
+
+  if (type === 'ferry') return (
+    <svg {...s} strokeWidth="1.8">
+      <path d="M2 18l4-9h12l4 9" />
+      <path d="M6 9V5h12v4" />
+      <path d="M2 18c2 2 5 2 8 0s6-2 8 0" />
+    </svg>
+  )
+
+  if (type === 'car') return (
+    <svg {...s} strokeWidth="1.8">
+      <path d="M5 11l1.5-4.5h11L19 11" />
+      <rect x="2" y="11" width="20" height="7" rx="2" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="17" cy="18" r="2" />
+    </svg>
+  )
+
+  return null
+}
+
 /** Pencil / edit icon */
 export function EditIcon({ size = 14, color = 'currentColor' }) {
   return (

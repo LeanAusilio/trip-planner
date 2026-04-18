@@ -20,6 +20,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
   const [departureTime, setDepartureTime] = useState(editing?.departureTime || '')
   const [arrivalTime, setArrivalTime] = useState(editing?.arrivalTime || '')
   const [notes, setNotes] = useState(editing?.notes || '')
+  const [budget, setBudget] = useState(editing?.budget != null ? String(editing.budget) : '')
   const [error, setError] = useState('')
 
   const validate = () => {
@@ -61,6 +62,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       ...(departureTime && { departureTime }),
       ...(arrivalTime && { arrivalTime }),
       ...(notes && { notes }),
+      ...(budget !== '' && !isNaN(parseFloat(budget)) && { budget: parseFloat(budget) }),
     }
 
     if (editing) {
@@ -77,17 +79,17 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       onClick={onClose}
     >
       <div
-        className="bg-white border border-gray-200 rounded-xl shadow-xl w-full max-w-sm mx-4 p-6"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl w-full max-w-sm mx-4 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-sm font-medium text-gray-900">
+          <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {editing ? 'Edit destination' : 'Add destination'}
           </h2>
           <button
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-gray-500 transition-colors rounded"
+            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded"
           >
             ✕
           </button>
@@ -96,7 +98,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* City */}
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">City</label>
+            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">City</label>
             <CitySearch
               value={city}
               onChange={(c) => { setCity(c); setError('') }}
@@ -107,7 +109,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Arrival</label>
+              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival</label>
               <input
                 type="date"
                 value={arrival}
@@ -116,7 +118,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Departure</label>
+              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure</label>
               <input
                 type="date"
                 value={departure}
@@ -129,7 +131,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
 
           {/* Type */}
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Type</label>
+            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Type</label>
             <div className="flex gap-2">
               {[
                 { key: 'vacation', label: 'Vacation' },
@@ -144,12 +146,31 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                       ? key === 'vacation'
                         ? 'bg-sky-50 border-sky-200 text-sky-700 font-medium'
                         : 'bg-violet-50 border-violet-200 text-violet-700 font-medium'
-                      : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-500'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:border-gray-300 hover:text-gray-500'
                   }`}
                 >
                   {label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Budget */}
+          <div>
+            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+              Budget <span className="text-gray-300">(optional)</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+              <input
+                type="number"
+                value={budget}
+                min="0"
+                step="0.01"
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder="0.00"
+                className="w-full border border-gray-200 rounded pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+              />
             </div>
           </div>
 
@@ -162,7 +183,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
             <div className="mt-3 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1.5">Airline</label>
+                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Airline</label>
                   <input
                     type="text"
                     value={airline}
@@ -172,7 +193,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1.5">Flight number</label>
+                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Flight number</label>
                   <input
                     type="text"
                     value={flightNumber}
@@ -184,7 +205,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1.5">Departure time</label>
+                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure time</label>
                   <input
                     type="time"
                     value={departureTime}
@@ -193,7 +214,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1.5">Arrival time</label>
+                  <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival time</label>
                   <input
                     type="time"
                     value={arrivalTime}
@@ -203,7 +224,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1.5">Notes</label>
+                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Notes</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -227,13 +248,13 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-400 border border-gray-200 rounded py-2 hover:bg-gray-50 transition-colors"
+              className="flex-1 text-sm text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 text-sm bg-gray-900 text-white rounded py-2 hover:bg-gray-700 transition-colors font-medium"
+              className="flex-1 text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded py-2 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
             >
               {editing ? 'Save changes' : 'Add destination'}
             </button>

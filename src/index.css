@@ -30,3 +30,32 @@ body {
 .dragging * {
   user-select: none;
 }
+
+/* Dark mode — form inputs */
+.dark input[type="text"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="email"],
+.dark textarea,
+.dark select {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+  color-scheme: dark;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Dark mode — details/summary */
+.dark summary {
+  color: #6b7280;
+}
+.dark summary:hover {
+  color: #9ca3af;
+}

@@ -1,6 +1,6 @@
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import { Flag } from './CitySearch'
-import { ACTIVITY_CONFIG, ActivityIcon, BedIcon } from './Icons'
+import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -8,8 +8,8 @@ function Row({ label, value }) {
   if (!value) return null
   return (
     <div>
-      <p className="text-xs text-gray-400">{label}</p>
-      <p className="text-sm text-gray-700 mt-0.5">{value}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-500">{label}</p>
+      <p className="text-sm text-gray-800 dark:text-gray-200 mt-0.5">{value}</p>
     </div>
   )
 }
@@ -18,12 +18,12 @@ function Link({ label, href }) {
   if (!href) return null
   return (
     <div>
-      <p className="text-xs text-gray-400">{label}</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500">{label}</p>
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm text-sky-600 hover:underline mt-0.5 block truncate"
+        className="text-sm text-sky-600 dark:text-sky-400 hover:underline mt-0.5 block truncate"
       >
         {href}
       </a>
@@ -38,7 +38,7 @@ function Section({ title, children }) {
   if (!hasContent) return null
   return (
     <div>
-      <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{title}</p>
+      <p className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">{title}</p>
       <div className="space-y-2.5">{children}</div>
     </div>
   )
@@ -61,8 +61,8 @@ function DestinationCard({ dest, relatedActivities, relatedHotels }) {
       <div className="flex items-center gap-3">
         <Flag code={dest.countryCode} country={dest.country} />
         <div>
-          <h2 className="text-base font-semibold text-gray-900">{dest.city}</h2>
-          <p className="text-xs text-gray-400">{dest.country}</p>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{dest.city}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-500">{dest.country}</p>
         </div>
         <span
           className="ml-auto text-xs px-2 py-0.5 rounded-full"
@@ -91,6 +91,13 @@ function DestinationCard({ dest, relatedActivities, relatedHotels }) {
           <Row label="Flight number" value={dest.flightNumber} />
           <Row label="Departure time" value={dest.departureTime} />
           <Row label="Arrival time" value={dest.arrivalTime} />
+        </Section>
+      )}
+
+      {/* Budget */}
+      {dest.budget != null && (
+        <Section title="Budget">
+          <Row label="Allocated" value={`$${dest.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
         </Section>
       )}
 
@@ -163,8 +170,8 @@ function HotelCard({ hotel }) {
       <div className="flex items-center gap-3">
         <BedIcon size={18} color="#a8a29e" />
         <div>
-          <h2 className="text-base font-semibold text-gray-900">{hotel.name}</h2>
-          <p className="text-xs text-gray-400">{nights} night{nights !== 1 ? 's' : ''}</p>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{hotel.name}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-500">{nights} night{nights !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -178,6 +185,12 @@ function HotelCard({ hotel }) {
           <Row label="Address" value={hotel.address} />
           <Row label="Confirmation" value={hotel.confirmationNumber} />
           <Link label="Booking link" href={hotel.bookingUrl} />
+        </Section>
+      )}
+
+      {hotel.budget != null && (
+        <Section title="Budget">
+          <Row label="Cost" value={`$${hotel.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
         </Section>
       )}
     </div>
@@ -199,8 +212,8 @@ function ActivityCard({ activity, destination }) {
           <ActivityIcon type={activity.type} size={16} color="white" />
         </span>
         <div>
-          <h2 className="text-base font-semibold text-gray-900">{activity.name}</h2>
-          <p className="text-xs text-gray-400">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{activity.name}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-500">
             {cfg.label} · {format(new Date(activity.date), 'MMM d, yyyy')}
             {destination && ` · ${destination.city}`}
           </p>
@@ -208,6 +221,9 @@ function ActivityCard({ activity, destination }) {
       </div>
 
       <Section title="Details">
+        {activity.budget != null && (
+          <Row label="Cost" value={`$${activity.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+        )}
         <Row label="Address" value={activity.address} />
         {activity.type === 'medical' && (
           <>
@@ -236,6 +252,57 @@ function ActivityCard({ activity, destination }) {
   )
 }
 
+// ── Transport card ──────────────────────────────────────────────────────────
+
+function TransportCard({ transport }) {
+  const cfg = TRANSPORT_CONFIG[transport.type]
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
+        <span
+          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: cfg.color }}
+        >
+          <TransportIcon type={transport.type} size={16} color="white" />
+        </span>
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            {transport.fromCity} → {transport.toCity}
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-500">{cfg.label}</p>
+        </div>
+      </div>
+
+      <Section title="Schedule">
+        <Row
+          label="Departure"
+          value={`${format(new Date(transport.departureDate), 'MMM d, yyyy')}${transport.departureTime ? ` at ${transport.departureTime}` : ''}`}
+        />
+        <Row
+          label="Arrival"
+          value={`${format(new Date(transport.arrivalDate), 'MMM d, yyyy')}${transport.arrivalTime ? ` at ${transport.arrivalTime}` : ''}`}
+        />
+      </Section>
+
+      {(transport.carrier || transport.bookingRef) && (
+        <Section title="Details">
+          <Row label={transport.type === 'flight' ? 'Airline' : transport.type === 'train' ? 'Train operator' : 'Carrier'} value={transport.carrier} />
+          <Row label={transport.type === 'flight' ? 'Flight number' : 'Booking reference'} value={transport.bookingRef} />
+        </Section>
+      )}
+
+      {transport.budget != null && (
+        <Section title="Budget">
+          <Row label="Cost" value={`$${transport.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+        </Section>
+      )}
+
+      {transport.notes && <Section title="Notes"><Row label="" value={transport.notes} /></Section>}
+    </div>
+  )
+}
+
 // ── Main DetailCard ─────────────────────────────────────────────────────────
 
 export default function DetailCard({ item, onClose, onEdit }) {
@@ -251,21 +318,27 @@ export default function DetailCard({ item, onClose, onEdit }) {
         onClick={onClose}
       />
 
-      {/* Panel */}
+      {/* Panel — bottom sheet on mobile, side panel on sm+ */}
       <div
         data-testid="detail-card-panel"
-        className="fixed right-0 top-0 bottom-0 z-50 bg-white border-l border-gray-100 shadow-xl flex flex-col"
-        style={{ width: 320 }}
+        className="fixed z-50 bg-white dark:bg-gray-900 shadow-xl flex flex-col
+          bottom-0 left-0 right-0 rounded-t-2xl border-t border-gray-100 dark:border-gray-800 max-h-[85vh]
+          sm:bottom-0 sm:top-0 sm:left-auto sm:right-0 sm:rounded-none sm:border-t-0 sm:border-l sm:max-h-none sm:w-80"
       >
+        {/* Drag handle (mobile only) */}
+        <div className="flex justify-center pt-3 pb-1 sm:hidden">
+          <div className="w-8 h-1 rounded-full bg-gray-200" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
-            {item.kind === 'destination' ? 'Destination' : item.kind === 'hotel' ? 'Hotel' : 'Activity'}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+          <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            {item.kind === 'destination' ? 'Destination' : item.kind === 'hotel' ? 'Hotel' : item.kind === 'transport' ? 'Transport' : 'Activity'}
           </span>
           <button
             data-testid="detail-card-close"
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-gray-500 transition-colors rounded"
+            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded"
           >
             ✕
           </button>
@@ -281,17 +354,18 @@ export default function DetailCard({ item, onClose, onEdit }) {
             />
           )}
           {item.kind === 'hotel' && <HotelCard hotel={item.data} />}
+          {item.kind === 'transport' && <TransportCard transport={item.data} />}
           {item.kind === 'activity' && (
             <ActivityCard activity={item.data} destination={item.destination} />
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-gray-100">
+        {/* Footer — hidden on mobile (view-only) */}
+        <div className="hidden sm:block px-5 py-4 border-t border-gray-100 dark:border-gray-800">
           <button
             data-testid="detail-card-edit"
             onClick={onEdit}
-            className="w-full text-sm bg-gray-900 text-white rounded-lg py-2.5 hover:bg-gray-700 transition-colors font-medium"
+            className="w-full text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-lg py-2.5 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
           >
             Edit
           </button>

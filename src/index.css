@@ -66,3 +66,36 @@ body {
 .dark summary:hover {
   color: #d1d5db;
 }
+
+/* ── Quick-start modal ────────────────────────────────────────────────────── */
+.qs-modal {
+  animation: qs-enter 200ms ease-out both;
+}
+@keyframes qs-enter {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+.qs-step {
+  animation: qs-step-in 250ms ease both;
+}
+@keyframes qs-step-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* CitySearch inside the dark quickstart modal */
+.qs-city-search input {
+  background: #2E2E33 !important;
+  border-color: #3A3A40 !important;
+  color: #F5F5F5 !important;
+}
+.qs-city-search input::placeholder { color: #4A4A50 !important; }
+.qs-city-search input:focus        { border-color: #5A5A60 !important; outline: none; }
+.qs-city-search > div > div.absolute { background: #242428; border-color: #3A3A40; }
+.qs-city-search button         { color: #F5F5F5 !important; }
+.qs-city-search button:hover   { background: #2E2E33 !important; }
+.qs-city-search .text-gray-800 { color: #F5F5F5 !important; }
+.qs-city-search .text-gray-500 { color: #7A7A80 !important; }
+.qs-city-search .border-gray-200 { border-color: #3A3A40 !important; }
+.qs-city-search .bg-white      { background: #242428 !important; }
+.qs-city-search .shadow-lg     { box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important; }

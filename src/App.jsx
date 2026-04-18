@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { uuid } from './lib/uuid'
 import { format, differenceInDays, startOfDay } from 'date-fns'
+import QuickStartModal from './components/quickstart/QuickStartModal'
 import Timeline from './components/Timeline'
 import AddDestinationModal from './components/AddDestinationModal'
 import ActivityModal from './components/ActivityModal'
@@ -80,6 +81,7 @@ export default function App() {
 
   const [modal, setModal] = useState(null)
   const [showExport, setShowExport] = useState(false)
+  const [showQuickStart, setShowQuickStart] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [destSplit, setDestSplit] = useState(63) // % width of destinations column on desktop
   const twoColRef = useRef(null)
@@ -102,6 +104,22 @@ export default function App() {
   const setCurrency = useCallback((c) => updateActiveTrip({ currency: c }), [updateActiveTrip])
 
   // ── Trip management ──
+  const addTripWithData = useCallback(({ name, destinations, hotels, activities }) => {
+    const sortedDests = sortByDate(
+      destinations.map((d) => ({ ...d, id: uuid(), type: 'vacation' })),
+      'arrival'
+    )
+    const firstDestId = sortedDests[0]?.id
+    const trip = makeTrip(name, {
+      destinations: sortedDests,
+      hotels: sortByDate(hotels.map((h) => ({ ...h, id: uuid() })), 'checkIn'),
+      activities: activities.map((a) => ({ ...a, id: uuid(), destinationId: firstDestId || '' })),
+    })
+    setTrips((prev) => [...prev, trip])
+    setActiveTripId(trip.id)
+    setShowQuickStart(false)
+  }, [])
+
   const addTrip = (name) => {
     if (trips.length >= 3) return
     const trip = makeTrip(name)
@@ -270,6 +288,7 @@ export default function App() {
         onClose={() => setSidebarOpen(false)}
         onSelect={(id) => { setActiveTripId(id); setSidebarOpen(false) }}
         onAdd={addTrip}
+        onNew={() => { setSidebarOpen(false); setShowQuickStart(true) }}
         onDelete={deleteTrip}
         onRename={renameTrip}
         dark={dark}
@@ -352,14 +371,17 @@ export default function App() {
       {/* ── Main ── */}
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8 dark:text-gray-100">
         {!hasData ? (
-          <div className="flex flex-col items-center justify-center py-40">
-            <div className="text-3xl mb-4" style={{ filter: 'grayscale(1)', opacity: 0.18 }}>✈</div>
-            <p className="text-sm text-gray-300 mb-1">No trips planned yet</p>
-            <p className="text-xs text-gray-200 mb-5">Start by adding a destination</p>
+          <div className="flex flex-col items-center justify-center py-40 gap-4">
+            <div className="text-3xl" style={{ filter: 'grayscale(1)', opacity: 0.18 }}>✈</div>
+            <div className="text-center">
+              <p className="text-sm text-gray-400 mb-1">No trips planned yet</p>
+              <p className="text-xs text-gray-300">Let's get you somewhere.</p>
+            </div>
             <button
-              onClick={() => setModal({ type: 'destination', editing: null })}
-              className="text-xs border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-400"
-            >Add your first destination</button>
+              onClick={() => setShowQuickStart(true)}
+              data-testid="plan-a-trip-button"
+              className="text-sm border border-gray-200 px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-gray-500 font-medium"
+            >Plan a trip →</button>
           </div>
         ) : (
           <>
@@ -582,6 +604,9 @@ export default function App() {
       )}
       {showExport && (
         <ExportModal destinations={destinations} hotels={hotels} activities={activities} onClose={() => setShowExport(false)} />
+      )}
+      {showQuickStart && (
+        <QuickStartModal onComplete={addTripWithData} onClose={() => setShowQuickStart(false)} />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />
     </div>

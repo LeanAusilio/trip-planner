@@ -3,6 +3,17 @@ import {
   format, addDays, differenceInDays, startOfDay,
   isSameDay, eachMonthOfInterval,
 } from 'date-fns'
+import { useCurrentWeather, wmoEmoji, isCurrentOrFuture } from '../hooks/useCurrentWeather'
+
+function WeatherChip({ city, countryCode, departure, textColor }) {
+  const weather = useCurrentWeather(city, countryCode, isCurrentOrFuture(departure))
+  if (!weather) return null
+  return (
+    <span style={{ fontSize: 11, color: textColor, opacity: 0.75, whiteSpace: 'nowrap', flexShrink: 0 }}>
+      {wmoEmoji(weather.code)} {weather.temp}° ↑{weather.high}° ↓{weather.low}°
+    </span>
+  )
+}
 import { Flag } from './CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
 
@@ -497,6 +508,9 @@ export default function Timeline({
                     <span style={{ fontSize: 11, color: textColor, opacity: 0.6, whiteSpace: 'nowrap', flexShrink: 0 }}>
                       {format(new Date(dest.arrival), 'MMM d')}–{format(new Date(dest.departure), 'MMM d')}
                     </span>
+                  )}
+                  {blockW > 220 && (
+                    <WeatherChip city={dest.city} countryCode={dest.countryCode} departure={dest.departure} textColor={textColor} />
                   )}
 
                   {/* ── Edit / delete buttons on hover ── */}

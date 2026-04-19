@@ -1,6 +1,7 @@
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import { Flag } from './CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
+import { useCurrentWeather, wmoEmoji, isCurrentOrFuture } from '../hooks/useCurrentWeather'
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -46,6 +47,19 @@ function Section({ title, children }) {
 
 // ── Destination card ────────────────────────────────────────────────────────
 
+function WeatherSection({ city, countryCode, departure }) {
+  const weather = useCurrentWeather(city, countryCode, isCurrentOrFuture(departure))
+  if (!weather) return null
+  return (
+    <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+      <span>{wmoEmoji(weather.code)}</span>
+      <span>{weather.temp}°</span>
+      <span className="text-gray-400 dark:text-gray-500">·</span>
+      <span className="text-xs text-gray-400 dark:text-gray-500">↑{weather.high}° ↓{weather.low}°</span>
+    </div>
+  )
+}
+
 function DestinationCard({ dest, relatedActivities, relatedHotels }) {
   const nights = differenceInDays(
     startOfDay(new Date(dest.departure)),
@@ -83,6 +97,9 @@ function DestinationCard({ dest, relatedActivities, relatedHotels }) {
         />
         <Row label="Duration" value={`${nights} night${nights !== 1 ? 's' : ''}`} />
       </Section>
+
+      {/* Current weather */}
+      <WeatherSection city={dest.city} countryCode={dest.countryCode} departure={dest.departure} />
 
       {/* Flight info */}
       {hasFlightInfo && (

@@ -22,6 +22,7 @@ import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
 import AuthButton from './components/AuthButton'
+import WelcomeScreen from './components/WelcomeScreen'
 import { shareToWhatsApp, exportTripCard } from './utils/share'
 import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
@@ -85,7 +86,9 @@ function sortByDate(arr, field) {
 // ── App ────────────────────────────────────────────────────────────────────
 export default function App() {
   const [dark, setDark] = useDarkMode()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
+  const [guestMode, setGuestMode] = useState(() => !!localStorage.getItem('wayfar-guest-mode'))
+  const showWelcome = !authLoading && !user && !guestMode
   const [trips, setTrips] = useState(() => loadState().trips)
   const [activeTripId, setActiveTripId] = useState(() => { const s = loadState(); return s.activeTripId || s.trips[0]?.id })
   const localTripsRef = useRef(null)
@@ -686,6 +689,14 @@ export default function App() {
         />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />
+      {showWelcome && (
+        <WelcomeScreen
+          onContinueAsGuest={() => {
+            localStorage.setItem('wayfar-guest-mode', 'true')
+            setGuestMode(true)
+          }}
+        />
+      )}
     </div>
   )
 }

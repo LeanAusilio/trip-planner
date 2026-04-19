@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { uuid } from './lib/uuid'
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import QuickStartModal from './components/quickstart/QuickStartModal'
+import CollaborationModal from './components/CollaborationModal'
+import { useCollaboration } from './hooks/useCollaboration'
 import Timeline from './components/Timeline'
 import AddDestinationModal from './components/AddDestinationModal'
 import ActivityModal from './components/ActivityModal'
@@ -82,6 +84,7 @@ export default function App() {
   const [modal, setModal] = useState(null)
   const [showExport, setShowExport] = useState(false)
   const [showQuickStart, setShowQuickStart] = useState(false)
+  const [showCollab, setShowCollab] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [destSplit, setDestSplit] = useState(63) // % width of destinations column on desktop
   const twoColRef = useRef(null)
@@ -102,6 +105,11 @@ export default function App() {
   }, [activeTripId])
 
   const setCurrency = useCallback((c) => updateActiveTrip({ currency: c }), [updateActiveTrip])
+
+  const collab = useCollaboration({
+    tripData: { destinations, hotels, activities, transports, packingList, currency: tripCurrency },
+    onRemoteUpdate: updateActiveTrip,
+  })
 
   // ── Trip management ──
   const addTripWithData = useCallback(({ name, destinations, hotels, activities }) => {
@@ -337,6 +345,20 @@ export default function App() {
             )}
           </div>
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => setShowCollab(true)}
+              data-testid="share-button"
+              className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500 flex items-center gap-1.5"
+            >
+              {collab.isCollaborating && (
+                <span
+                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                  style={{ background: { syncing: '#f59e0b', synced: '#22c55e', error: '#ef4444' }[collab.syncStatus] ?? '#9ca3af' }}
+                  data-testid="sync-status-dot"
+                />
+              )}
+              Share
+            </button>
             {hasData && (
               <button
                 onClick={() => setShowExport(true)}
@@ -607,6 +629,17 @@ export default function App() {
       )}
       {showQuickStart && (
         <QuickStartModal onComplete={addTripWithData} onClose={() => setShowQuickStart(false)} />
+      )}
+      {showCollab && (
+        <CollaborationModal
+          isCollaborating={collab.isCollaborating}
+          tripCode={collab.tripCode}
+          syncStatus={collab.syncStatus}
+          onStartSharing={collab.startSharing}
+          onJoinTrip={collab.joinTrip}
+          onStopSharing={collab.stopSharing}
+          onClose={() => setShowCollab(false)}
+        />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />
     </div>

@@ -16,6 +16,7 @@ import PackingList from './components/PackingList'
 import WeatherWidget from './components/WeatherWidget'
 import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
+import { createDemoTrip } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
@@ -111,6 +112,21 @@ export default function App() {
     tripData: { destinations, hotels, activities, transports, packingList, currency: tripCurrency },
     onRemoteUpdate: updateActiveTrip,
   })
+
+  // ── Demo seed (?demo in URL adds a pre-filled trip without touching existing data) ──
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('demo')) return
+    window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+    setTrips((prev) => {
+      if (prev.length >= 3) return prev
+      if (prev.some((t) => t.name === 'Europe Demo')) return prev
+      const demo = createDemoTrip()
+      const trip = makeTrip(demo.name, demo)
+      setActiveTripId(trip.id)
+      return [...prev, trip]
+    })
+  }, [])
 
   // ── Trip management ──
   const addTripWithData = useCallback(({ name, destinations, hotels, activities }) => {

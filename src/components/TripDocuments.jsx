@@ -81,7 +81,7 @@ export default function TripDocuments({ documents, tripId, userId, onAdd, onDele
 
     setUploading(true)
     const path = `${userId}/${tripId}/${Date.now()}-${file.name}`
-    const { error } = await supabase.storage.from('trip-docs').upload(path, file)
+    const { error } = await supabase.storage.from('Trips-docs').upload(path, file)
     setUploading(false)
     if (error) { setUploadError(error.message); return }
     onAdd({ id: crypto.randomUUID(), type: 'file', title: file.name, path, size: file.size })
@@ -89,14 +89,14 @@ export default function TripDocuments({ documents, tripId, userId, onAdd, onDele
 
   const handleOpenFile = async (doc) => {
     if (!supabase) return
-    const { data, error } = await supabase.storage.from('trip-docs').createSignedUrl(doc.path, 3600)
+    const { data, error } = await supabase.storage.from('Trips-docs').createSignedUrl(doc.path, 3600)
     if (error || !data?.signedUrl) return
     window.open(data.signedUrl, '_blank', 'noopener')
   }
 
   const handleDeleteFile = async (doc) => {
     if (doc.type === 'file' && supabase) {
-      await supabase.storage.from('trip-docs').remove([doc.path]).catch(() => {})
+      await supabase.storage.from('Trips-docs').remove([doc.path]).catch(() => {})
     }
     onDelete(doc.id)
   }

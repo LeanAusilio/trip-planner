@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { _debugUrl, _debugKey } from '../lib/supabase'
 
 const STATUS_COLOR = { idle: '#9ca3af', syncing: '#f59e0b', synced: '#22c55e', error: '#ef4444' }
 const STATUS_LABEL = { idle: 'Connected', syncing: 'Syncing…', synced: 'Up to date', error: 'Sync error' }
@@ -52,7 +53,9 @@ export default function CollaborationModal({
 
         {!supabaseReady && (
           <div className="mb-4 px-3 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 text-xs text-amber-700 dark:text-amber-400" data-testid="collab-unavailable-banner">
-            Live collaboration requires Supabase environment variables (<code className="font-mono">VITE_SUPABASE_URL</code> and <code className="font-mono">VITE_SUPABASE_ANON_KEY</code>) to be set in your Netlify deploy settings.
+            <p className="mb-2">Supabase environment variables not reaching this build:</p>
+            <p><span className="font-mono">VITE_SUPABASE_URL</span> — {_debugUrl ? `✓ set (${_debugUrl.slice(0, 20)}…)` : '✗ missing'}</p>
+            <p><span className="font-mono">VITE_SUPABASE_ANON_KEY</span> — {_debugKey ? '✓ set' : '✗ missing'}</p>
           </div>
         )}
 

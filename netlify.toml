@@ -1,0 +1,33 @@
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+# Node version
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: all routes fall back to index.html
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# ── Branch contexts ────────────────────────────────────────────────────────────
+# Production (main branch) — set VITE_ENV so the app knows its context.
+# Add production Supabase keys here when collaboration is implemented.
+[context.production.environment]
+  VITE_ENV = "production"
+  # VITE_SUPABASE_URL     = "https://xxx.supabase.co"
+  # VITE_SUPABASE_ANON_KEY = "..."
+
+# Staging branch — separate Supabase project for safe testing before prod.
+[context.staging.environment]
+  VITE_ENV = "staging"
+  # VITE_SUPABASE_URL     = "https://yyy.supabase.co"
+  # VITE_SUPABASE_ANON_KEY = "..."
+
+# All other branches get deploy previews with staging-like config.
+[context.branch-deploy.environment]
+  VITE_ENV = "preview"
+  # VITE_SUPABASE_URL     = "https://yyy.supabase.co"
+  # VITE_SUPABASE_ANON_KEY = "..."

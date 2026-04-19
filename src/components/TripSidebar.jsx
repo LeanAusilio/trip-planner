@@ -85,7 +85,7 @@ function TripRow({ trip, isActive, onSelect, onDelete, onRename }) {
   )
 }
 
-export default function TripSidebar({ trips, activeTripId, open, onClose, onSelect, onAdd, onDelete, onRename, dark }) {
+export default function TripSidebar({ trips, activeTripId, open, onClose, onSelect, onAdd, onNew, onDelete, onRename, dark }) {
   const [newName, setNewName] = useState('')
   const [adding, setAdding] = useState(false)
   const inputRef = useRef(null)
@@ -171,7 +171,7 @@ export default function TripSidebar({ trips, activeTripId, open, onClose, onSele
             <p className="text-xs text-gray-300 dark:text-gray-600 text-center py-1">3-trip limit reached</p>
           ) : (
             <button
-              onClick={() => setAdding(true)}
+              onClick={onNew ?? (() => setAdding(true))}
               className="w-full text-sm text-gray-400 dark:text-gray-500 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg py-2 hover:border-gray-300 hover:text-gray-500 dark:hover:border-gray-600 dark:hover:text-gray-400 transition-colors"
             >+ New trip</button>
           )}

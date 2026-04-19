@@ -152,7 +152,7 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
             >
               <Flag code={r.countryCode} country={r.country} />
               <span className="font-medium text-gray-800">{r.city}</span>
-              <span className="text-gray-400 text-xs">{r.country}</span>
+              <span className="text-gray-500 dark:text-gray-400 text-xs">{r.country}</span>
             </button>
           ))}
         </div>

@@ -64,12 +64,12 @@
 
   <rect width="680" height="420" fill="#ffffff"/>
 
-  <path d="M-10 320 Q80 290 160 300 Q240 310 300 270 Q360 230 440 240 Q520 250 600 210 Q640 190 700 200" fill="none" stroke="#c8cdd6" stroke-width="1.2" opacity="0.9"/>
-  <path d="M-10 180 Q60 160 140 170 Q220 180 280 150 Q340 120 420 130 Q500 140 570 100 Q620 75 700 90" fill="none" stroke="#d8dbe2" stroke-width="1" opacity="0.85"/>
-  <path d="M-10 380 Q100 360 200 370 Q300 380 380 340 Q460 300 540 320 Q610 335 700 310" fill="none" stroke="#dde0e6" stroke-width="0.9" opacity="0.75"/>
-  <path d="M-10 60 Q90 50 180 65 Q260 80 340 55 Q420 30 510 45 Q590 58 700 40" fill="none" stroke="#e2e5ea" stroke-width="0.8" opacity="0.7"/>
-  <path d="M-10 250 Q70 235 150 245 Q230 255 310 225 Q390 195 470 210 Q555 225 640 190 Q665 180 700 185" fill="none" stroke="#cdd1d9" stroke-width="1" opacity="0.8"/>
-  <path d="M-10 120 Q120 105 200 115 Q290 125 370 95 Q450 65 540 80 Q610 90 700 70" fill="none" stroke="#e0e3e8" stroke-width="0.8" opacity="0.65"/>
+  <path d="M-10 320 L160 300 L300 270 L440 240 L600 210 L700 200" fill="none" stroke="#c8cdd6" stroke-width="1.2" opacity="0.9"/>
+  <path d="M-10 180 L140 170 L280 150 L420 130 L570 100 L700 90" fill="none" stroke="#d8dbe2" stroke-width="1" opacity="0.85"/>
+  <path d="M-10 380 L200 370 L380 340 L540 320 L700 310" fill="none" stroke="#dde0e6" stroke-width="0.9" opacity="0.75"/>
+  <path d="M-10 60 L180 65 L340 55 L510 45 L700 40" fill="none" stroke="#e2e5ea" stroke-width="0.8" opacity="0.7"/>
+  <path d="M-10 250 L150 245 L310 225 L470 210 L640 190 L700 185" fill="none" stroke="#cdd1d9" stroke-width="1" opacity="0.8"/>
+  <path d="M-10 120 L200 115 L370 95 L540 80 L700 70" fill="none" stroke="#e0e3e8" stroke-width="0.8" opacity="0.65"/>
 
   <circle class="pulse-ring d1" cx="160" cy="300" r="6" fill="none" stroke="#9aa0aa" stroke-width="1"/>
   <circle cx="160" cy="300" r="12" fill="url(#h1)" opacity="0.5"/>

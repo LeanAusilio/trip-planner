@@ -72,7 +72,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type */}
           <div>
-            <label className="block text-xs text-gray-400 dark:text-gray-500 mb-2">Type</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-2">Type</label>
             <div className="grid grid-cols-5 gap-1.5">
               {Object.entries(TRANSPORT_CONFIG).map(([key, c]) => {
                 const selected = type === key
@@ -83,7 +83,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
                     onClick={() => setType(key)}
                     style={selected ? { background: c.color, borderColor: c.color } : {}}
                     className={`flex flex-col items-center gap-1 py-2.5 rounded-lg border transition-all ${
-                      selected ? 'text-white' : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 hover:border-gray-300'
+                      selected ? 'text-white' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
                     <span style={selected ? {} : { filter: 'grayscale(1)', opacity: 0.5 }}>
@@ -99,7 +99,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
           {/* From / To */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">From</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">From</label>
               <input
                 type="text"
                 value={fromCity}
@@ -110,7 +110,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">To</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">To</label>
               <input
                 type="text"
                 value={toCity}
@@ -124,7 +124,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
           {/* Departure */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure date</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Departure date</label>
               <input
                 type="date"
                 value={departureDate}
@@ -133,7 +133,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Departure time</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Departure time</label>
               <input
                 type="time"
                 value={departureTime}
@@ -146,7 +146,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
           {/* Arrival */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival date</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Arrival date</label>
               <input
                 type="date"
                 value={arrivalDate}
@@ -156,7 +156,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Arrival time</label>
+              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Arrival time</label>
               <input
                 type="time"
                 value={arrivalTime}
@@ -174,7 +174,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
             </summary>
             <div className="mt-3 space-y-3">
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
                   {type === 'flight' ? 'Airline' : type === 'train' ? 'Train operator' : type === 'ferry' ? 'Ferry operator' : 'Carrier'}
                 </label>
                 <input
@@ -186,7 +186,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
                   {type === 'flight' ? 'Flight number' : 'Booking reference'}
                 </label>
                 <input
@@ -198,7 +198,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Budget</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Budget</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
                   <input
@@ -213,7 +213,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 dark:text-gray-500 mb-1.5">Notes</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Notes</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -231,7 +231,7 @@ export default function TransportModal({ editing, onSave, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >Cancel</button>
             <button
               type="submit"

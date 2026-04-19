@@ -20,6 +20,7 @@ import { createDemoTrip } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
+import { shareToWhatsApp, exportTripCard } from './utils/share'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -372,6 +373,8 @@ export default function App() {
               onAddHotel={() => setModal({ type: 'hotel', editing: null })}
               onAddActivity={() => setModal({ type: 'activity', editing: null, context: destinations[0] ?? null })}
               onExport={() => setShowExport(true)}
+              onWhatsApp={() => shareToWhatsApp(destinations, collab.isCollaborating ? collab.tripCode : undefined)}
+              onInstagram={() => exportTripCard(destinations, activeTrip?.name)}
               onShare={() => setShowCollab(true)}
               isCollaborating={collab.isCollaborating}
               syncStatus={collab.syncStatus}

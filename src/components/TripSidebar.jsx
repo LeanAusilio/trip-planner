@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Flag } from './CitySearch'
 
-const MAX_TRIPS = 3
+const DEFAULT_MAX_TRIPS = 3
 
 function TripRow({ trip, isActive, onSelect, onDelete, onRename }) {
   const [editing, setEditing] = useState(false)
@@ -85,11 +85,11 @@ function TripRow({ trip, isActive, onSelect, onDelete, onRename }) {
   )
 }
 
-export default function TripSidebar({ trips, activeTripId, open, onClose, onSelect, onAdd, onNew, onDelete, onRename, dark }) {
+export default function TripSidebar({ trips, activeTripId, open, onClose, onSelect, onAdd, onNew, onDelete, onRename, dark, tripLimit = DEFAULT_MAX_TRIPS }) {
   const [newName, setNewName] = useState('')
   const [adding, setAdding] = useState(false)
   const inputRef = useRef(null)
-  const atLimit = trips.length >= MAX_TRIPS
+  const atLimit = trips.length >= tripLimit
 
   useEffect(() => {
     if (adding) inputRef.current?.focus()

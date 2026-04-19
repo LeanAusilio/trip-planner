@@ -88,7 +88,10 @@ export default function App() {
   const [showQuickStart, setShowQuickStart] = useState(false)
   const [showCollab, setShowCollab] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-  const [destSplit, setDestSplit] = useState(63) // % width of destinations column on desktop
+  const [destSplit, setDestSplit] = useState(63)
+  const [destsOpen, setDestsOpen] = useState(true)
+  const [hotelsOpen, setHotelsOpen] = useState(true)
+  const [transportsOpen, setTransportsOpen] = useState(true)
   const twoColRef = useRef(null)
 
   // Persist
@@ -320,7 +323,7 @@ export default function App() {
       />
 
       {/* ── Header ── */}
-      <header className="relative z-10 border-b border-gray-100 dark:border-gray-800 px-4 sm:px-8 py-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
+      <header className="relative z-20 border-b border-gray-100 dark:border-gray-800 px-4 sm:px-8 py-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
         <div className="flex items-center justify-between max-w-6xl mx-auto gap-2">
           <div className="flex items-center gap-3 flex-wrap min-w-0">
             {/* Sidebar toggle */}
@@ -441,10 +444,13 @@ export default function App() {
                 className="two-col-left w-full flex-shrink-0"
                 style={{ width: `${destSplit}%` }}
               >
-                <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <PlaneIcon size={12} color={dark ? 'white' : 'black'} /> Destinations
-                </h2>
-                <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-3 cursor-pointer select-none" onClick={() => setDestsOpen(o => !o)}>
+                  <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <PlaneIcon size={12} color={dark ? 'white' : 'black'} /> Destinations
+                  </h2>
+                  <span className="text-xs text-gray-300 dark:text-gray-600">{destsOpen ? '▲' : '▼'}</span>
+                </div>
+                {destsOpen && <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                   {destinations.map((dest, idx) => {
                     const nights = differenceInDays(startOfDay(new Date(dest.departure)), startOfDay(new Date(dest.arrival)))
                     const destActivities = activities.filter((a) => a.destinationId === dest.id)
@@ -495,7 +501,7 @@ export default function App() {
                       </div>
                     )
                   })}
-                </div>
+                </div>}
               </section>
             )}
 
@@ -524,10 +530,13 @@ export default function App() {
             {/* Hotel list */}
             {hotels.length > 0 && (
               <section className="mb-8">
-                <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <BedIcon size={11} color="#9ca3af" /> Hotels
-                </h2>
-                <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-3 cursor-pointer select-none" onClick={() => setHotelsOpen(o => !o)}>
+                  <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <BedIcon size={11} color="#9ca3af" /> Hotels
+                  </h2>
+                  <span className="text-xs text-gray-300 dark:text-gray-600">{hotelsOpen ? '▲' : '▼'}</span>
+                </div>
+                {hotelsOpen && <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                   {hotels.map((hotel, idx) => {
                     const nights = differenceInDays(startOfDay(new Date(hotel.checkOut)), startOfDay(new Date(hotel.checkIn)))
                     return (
@@ -548,17 +557,20 @@ export default function App() {
                       </div>
                     )
                   })}
-                </div>
+                </div>}
               </section>
             )}
 
             {/* Transport list */}
             {transports.length > 0 && (
               <section className="mb-8">
-                <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <TransportIcon type="flight" size={11} color="#9ca3af" /> Transports
-                </h2>
-                <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-3 cursor-pointer select-none" onClick={() => setTransportsOpen(o => !o)}>
+                  <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <TransportIcon type="flight" size={11} color="#9ca3af" /> Transports
+                  </h2>
+                  <span className="text-xs text-gray-300 dark:text-gray-600">{transportsOpen ? '▲' : '▼'}</span>
+                </div>
+                {transportsOpen && <div className="border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                   {transports.map((t, idx) => {
                     const cfg = TRANSPORT_CONFIG[t.type]
                     return (
@@ -582,7 +594,7 @@ export default function App() {
                       </div>
                     )
                   })}
-                </div>
+                </div>}
               </section>
             )}
 

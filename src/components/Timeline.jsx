@@ -161,7 +161,6 @@ export default function Timeline({
 
   const TL = {
     bg:          dark ? '#111827' : '#ffffff',
-    stripe:      dark ? '#1a2130' : '#fafafa',
     border:      dark ? '#1f2937' : '#f3f4f6',
     monthLine:   dark ? '#1f2937' : '#f9fafb',
     todayLine:   dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
@@ -422,12 +421,7 @@ export default function Timeline({
 
             return (
               <div key={dest.id} style={{ position: 'absolute', left: 0, right: 0, top: rowTop, height: ROW_H }}>
-                {/* Stripe */}
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: idx % 2 === 1 ? TL.stripe : 'transparent',
-                  borderRadius: 4,
-                }} />
+                {/* No stripe — solid background from container */}
 
                 {/* Live date tooltip while resizing */}
                 {isActive && dragMode === 'resize-left' && (

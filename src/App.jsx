@@ -13,6 +13,7 @@ import ExportModal from './components/ExportModal'
 import DetailCard from './components/DetailCard'
 import TripSidebar from './components/TripSidebar'
 import PackingList from './components/PackingList'
+import TripDocuments from './components/TripDocuments'
 import WeatherWidget from './components/WeatherWidget'
 import WeatherBadge from './components/WeatherBadge'
 import MapView from './components/MapView'
@@ -55,6 +56,7 @@ function makeTrip(name, data = {}) {
     activities: data.activities || [],
     transports: data.transports || [],
     packingList: data.packingList || [],
+    documents: data.documents || [],
     currency: data.currency || 'USD',
   }
 }
@@ -135,8 +137,8 @@ export default function App() {
 
   // ── Active trip helpers ──
   const activeTrip = trips.find((t) => t.id === activeTripId) || trips[0]
-  const { destinations, hotels, activities, transports, packingList, currency: tripCurrency = 'USD' } = activeTrip || {
-    destinations: [], hotels: [], activities: [], transports: [], packingList: [], currency: 'USD',
+  const { destinations, hotels, activities, transports, packingList, documents = [], currency: tripCurrency = 'USD' } = activeTrip || {
+    destinations: [], hotels: [], activities: [], transports: [], packingList: [], documents: [], currency: 'USD',
   }
 
   const updateActiveTrip = useCallback((updates) => {
@@ -269,6 +271,10 @@ export default function App() {
   const clearPackingChecked = () => {
     updateActiveTrip({ packingList: packingList.filter((i) => !i.checked) })
   }
+
+  // ── Documents ──
+  const addDocument = (doc) => updateActiveTrip({ documents: [...documents, doc] })
+  const deleteDocument = (id) => updateActiveTrip({ documents: documents.filter((d) => d.id !== id) })
 
   // ── Detail card helpers ──
   const openDestCard = (dest) => {
@@ -568,6 +574,16 @@ export default function App() {
                 onClearChecked={clearPackingChecked}
                 dark={dark}
               />
+              <div className="mt-8">
+                <TripDocuments
+                  documents={documents}
+                  tripId={activeTrip?.id}
+                  userId={user?.id}
+                  onAdd={addDocument}
+                  onDelete={deleteDocument}
+                  dark={dark}
+                />
+              </div>
             </div>
 
             </div>{/* end two-col */}

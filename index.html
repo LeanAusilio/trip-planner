@@ -21,6 +21,19 @@
           });
         };
       }
+      // Show script-level errors on screen (for iOS Safari where devtools aren't accessible)
+      function showCrash(msg) {
+        var el = document.createElement('div');
+        el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;padding:24px;font:14px/1.6 monospace;overflow:auto;z-index:9999;white-space:pre-wrap;word-break:break-word;color:#111';
+        el.textContent = 'App crashed — please share this with support:\n\n' + msg;
+        document.body.appendChild(el);
+      }
+      window.addEventListener('error', function(e) {
+        showCrash((e.error ? e.error.stack || e.error.toString() : '') || (e.message + ' (' + e.filename + ':' + e.lineno + ')'));
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        showCrash('Unhandled promise rejection:\n' + (e.reason && (e.reason.stack || e.reason.toString ? e.reason.toString() : '') || String(e.reason)));
+      });
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

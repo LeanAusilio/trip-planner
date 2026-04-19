@@ -1,17 +1,8 @@
 import { useState } from 'react'
-import { signInWithGoogle, signOut } from '../lib/auth'
-import PrivacyNotice from './PrivacyNotice'
+import { signOut } from '../lib/auth'
 
-export default function AuthButton({ user }) {
-  const [showNotice, setShowNotice] = useState(false)
+export default function AuthButton({ user, onShowWelcome }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-
-  const handleSignIn = async () => {
-    setLoading(true)
-    try { await signInWithGoogle() }
-    catch { setLoading(false) }
-  }
 
   const handleSignOut = async () => {
     setMenuOpen(false)
@@ -53,20 +44,12 @@ export default function AuthButton({ user }) {
   }
 
   return (
-    <>
-      <button
-        onClick={() => setShowNotice(true)}
-        disabled={loading}
-        className="text-xs px-3 h-8 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 flex-shrink-0"
-      >
-        {loading ? 'Redirecting…' : 'Sign in'}
-      </button>
-      {showNotice && (
-        <PrivacyNotice
-          onAccept={() => { setShowNotice(false); handleSignIn() }}
-          onDismiss={() => setShowNotice(false)}
-        />
-      )}
-    </>
+    <button
+      onClick={onShowWelcome}
+      className="text-xs px-3 h-8 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
+    >
+      Sign in
+    </button>
   )
 }
+

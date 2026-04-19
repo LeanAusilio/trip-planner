@@ -403,7 +403,10 @@ export default function App() {
             )}
           </div>
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
-            <AuthButton user={user} />
+            <AuthButton user={user} onShowWelcome={() => {
+              localStorage.removeItem('wayfar-guest-mode')
+              setGuestMode(false)
+            }} />
             <HeaderMenus
               hasData={hasData}
               onAddDestination={() => setModal({ type: 'destination', editing: null })}

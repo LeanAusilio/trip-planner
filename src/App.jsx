@@ -14,6 +14,7 @@ import DetailCard from './components/DetailCard'
 import TripSidebar from './components/TripSidebar'
 import PackingList from './components/PackingList'
 import WeatherWidget from './components/WeatherWidget'
+import WeatherBadge from './components/WeatherBadge'
 import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
 import { createDemoTrip } from './lib/demoData'
@@ -479,6 +480,7 @@ export default function App() {
                               {destActivities.length > 0 && <><span className="ml-2 text-gray-200 mr-1.5">·</span>{destActivities.length} activit{destActivities.length !== 1 ? 'ies' : 'y'}</>}
                               {dest.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${dest.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
                             </p>
+                            <WeatherBadge city={dest.city} countryCode={dest.countryCode} date={dest.arrival} />
                           </div>
                           <div className="hidden sm:flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => setModal({ type: 'activity', editing: null, context: dest })} className="text-xs text-gray-400 hover:text-gray-600 px-2.5 py-1.5 rounded border border-transparent hover:border-gray-200 transition-colors">+ Activity</button>

@@ -21,8 +21,11 @@ import { createDemoTrip } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
+import AuthButton from './components/AuthButton'
 import { shareToWhatsApp, exportTripCard } from './utils/share'
 import { supabase } from './lib/supabase'
+import { useAuth } from './hooks/useAuth'
+import { loadTrips, saveTrip, deleteCloudTrip } from './lib/cloudTrips'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -82,8 +85,10 @@ function sortByDate(arr, field) {
 // ── App ────────────────────────────────────────────────────────────────────
 export default function App() {
   const [dark, setDark] = useDarkMode()
+  const { user } = useAuth()
   const [trips, setTrips] = useState(() => loadState().trips)
   const [activeTripId, setActiveTripId] = useState(() => { const s = loadState(); return s.activeTripId || s.trips[0]?.id })
+  const localTripsRef = useRef(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const [modal, setModal] = useState(null)
@@ -97,10 +102,33 @@ export default function App() {
   const [transportsOpen, setTransportsOpen] = useState(true)
   const twoColRef = useRef(null)
 
-  // Persist
+  // Persist to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips, activeTripId }))
   }, [trips, activeTripId])
+
+  // On sign-in: load cloud trips, or migrate local trips up
+  useEffect(() => {
+    if (!user?.id || !supabase) return
+    if (localTripsRef.current === null) localTripsRef.current = trips
+    loadTrips(user.id).then((cloud) => {
+      if (cloud.length > 0) {
+        setTrips(cloud)
+        setActiveTripId((prev) => cloud.find((t) => t.id === prev)?.id ?? cloud[0].id)
+      } else {
+        localTripsRef.current.forEach((t) => saveTrip(user.id, t).catch(() => {}))
+      }
+    }).catch(() => {})
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync changes to cloud when signed in (debounced 800ms)
+  useEffect(() => {
+    if (!user?.id || !supabase) return
+    const timer = setTimeout(() => {
+      trips.forEach((t) => saveTrip(user.id, t).catch(() => {}))
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [trips, user?.id])
 
   // ── Active trip helpers ──
   const activeTrip = trips.find((t) => t.id === activeTripId) || trips[0]
@@ -151,14 +179,17 @@ export default function App() {
     setShowQuickStart(false)
   }, [])
 
+  const tripLimit = user ? 5 : 3
+
   const addTrip = (name) => {
-    if (trips.length >= 3) return
+    if (trips.length >= tripLimit) return
     const trip = makeTrip(name)
     setTrips((prev) => [...prev, trip])
     setActiveTripId(trip.id)
     setSidebarOpen(false)
   }
   const deleteTrip = (id) => {
+    if (user?.id && supabase) deleteCloudTrip(id).catch(() => {})
     setTrips((prev) => {
       const next = prev.filter((t) => t.id !== id)
       if (next.length === 0) {
@@ -323,6 +354,7 @@ export default function App() {
         onDelete={deleteTrip}
         onRename={renameTrip}
         dark={dark}
+        tripLimit={tripLimit}
       />
 
       {/* ── Header ── */}
@@ -368,6 +400,7 @@ export default function App() {
             )}
           </div>
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+            <AuthButton user={user} />
             <HeaderMenus
               hasData={hasData}
               onAddDestination={() => setModal({ type: 'destination', editing: null })}

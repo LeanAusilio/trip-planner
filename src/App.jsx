@@ -18,6 +18,7 @@ import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
+import HeaderMenus from './components/HeaderMenus'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -345,42 +346,17 @@ export default function App() {
             )}
           </div>
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={() => setShowCollab(true)}
-              data-testid="share-button"
-              className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500 flex items-center gap-1.5"
-            >
-              {collab.isCollaborating && (
-                <span
-                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ background: { syncing: '#f59e0b', synced: '#22c55e', error: '#ef4444' }[collab.syncStatus] ?? '#9ca3af' }}
-                  data-testid="sync-status-dot"
-                />
-              )}
-              Share
-            </button>
-            {hasData && (
-              <button
-                onClick={() => setShowExport(true)}
-                className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500 flex items-center gap-1.5"
-              >↑ Export</button>
-            )}
-            <button
-              onClick={() => setModal({ type: 'transport', editing: null })}
-              className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 flex items-center gap-1.5"
-            >
-              <TransportIcon type="flight" size={13} color="#9ca3af" /> Add transport
-            </button>
-            <button
-              onClick={() => setModal({ type: 'hotel', editing: null })}
-              className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 flex items-center gap-1.5"
-            >
-              <BedIcon size={13} color="#9ca3af" /> Add hotel
-            </button>
-            <button
-              onClick={() => setModal({ type: 'destination', editing: null })}
-              className="text-sm border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
-            >+ Add destination</button>
+            <HeaderMenus
+              hasData={hasData}
+              onAddDestination={() => setModal({ type: 'destination', editing: null })}
+              onAddTransport={() => setModal({ type: 'transport', editing: null })}
+              onAddHotel={() => setModal({ type: 'hotel', editing: null })}
+              onAddActivity={() => setModal({ type: 'activity', editing: null, context: destinations[0] ?? null })}
+              onExport={() => setShowExport(true)}
+              onShare={() => setShowCollab(true)}
+              isCollaborating={collab.isCollaborating}
+              syncStatus={collab.syncStatus}
+            />
             <button
               onClick={() => setDark((d) => !d)}
               className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500"

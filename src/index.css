@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light mode: warm tinted background so white cards pop */
+html:not(.dark) body {
+  background-color: #F7F7F5;
+}
+/* Elevate light-mode secondary text for better contrast */
+html:not(.dark) .text-gray-300 {
+  color: #6b7280 !important;
+}
+html:not(.dark) .text-gray-200 {
+  color: #9ca3af !important;
+}
+
 @font-face {
   font-family: 'Geist';
   src: url('../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');

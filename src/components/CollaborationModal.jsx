@@ -6,6 +6,7 @@ const STATUS_LABEL = { idle: 'Connected', syncing: 'Syncing…', synced: 'Up to 
 export default function CollaborationModal({
   isCollaborating, tripCode, syncStatus,
   onStartSharing, onJoinTrip, onStopSharing, onClose,
+  supabaseReady = true,
 }) {
   const [mode, setMode]     = useState('none') // 'none' | 'join'
   const [joinCode, setJoinCode] = useState('')
@@ -49,6 +50,12 @@ export default function CollaborationModal({
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl leading-none">×</button>
         </div>
 
+        {!supabaseReady && (
+          <div className="mb-4 px-3 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 text-xs text-amber-700 dark:text-amber-400" data-testid="collab-unavailable-banner">
+            Live collaboration requires Supabase environment variables (<code className="font-mono">VITE_SUPABASE_URL</code> and <code className="font-mono">VITE_SUPABASE_ANON_KEY</code>) to be set in your Netlify deploy settings.
+          </div>
+        )}
+
         {isCollaborating ? (
           <>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
@@ -81,7 +88,7 @@ export default function CollaborationModal({
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleStart}
-                  disabled={loading}
+                  disabled={loading || !supabaseReady}
                   data-testid="start-sharing-button"
                   className="w-full text-sm py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
@@ -89,8 +96,9 @@ export default function CollaborationModal({
                 </button>
                 <button
                   onClick={() => setMode('join')}
+                  disabled={!supabaseReady}
                   data-testid="join-code-button"
-                  className="w-full text-sm py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="w-full text-sm py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Join with a code
                 </button>

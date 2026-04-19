@@ -32,20 +32,24 @@ function DropdownMenu({ label, items, align = 'right' }) {
       </button>
       {open && (
         <div
-          className={`absolute top-full mt-1.5 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 py-1 ${align === 'right' ? 'right-0' : 'left-0'}`}
+          className={`absolute top-full mt-1.5 w-52 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 py-1 ${align === 'right' ? 'right-0' : 'left-0'}`}
         >
-          {items.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => { item.onClick(); setOpen(false) }}
-              disabled={item.disabled}
-              className="w-full text-left px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {item.icon && <span className="w-4 flex items-center justify-center">{item.icon}</span>}
-              {item.label}
-              {item.badge}
-            </button>
-          ))}
+          {items.map((item, idx) =>
+            item.divider ? (
+              <div key={`div-${idx}`} className="my-1 border-t border-gray-100 dark:border-gray-800" />
+            ) : (
+              <button
+                key={item.label}
+                onClick={() => { item.onClick(); setOpen(false) }}
+                disabled={item.disabled}
+                className="w-full text-left px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {item.icon && <span className="w-4 flex items-center justify-center">{item.icon}</span>}
+                {item.label}
+                {item.badge}
+              </button>
+            )
+          )}
         </div>
       )}
     </div>
@@ -59,6 +63,8 @@ export default function HeaderMenus({
   onAddHotel,
   onAddActivity,
   onExport,
+  onWhatsApp,
+  onInstagram,
   onShare,
   isCollaborating,
   syncStatus,
@@ -95,6 +101,20 @@ export default function HeaderMenus({
       onClick: onExport,
       disabled: !hasData,
     },
+    { divider: true },
+    {
+      label: 'Save as image',
+      icon: <span className="text-base leading-none">📸</span>,
+      onClick: onInstagram,
+      disabled: !hasData,
+    },
+    {
+      label: 'Share via WhatsApp',
+      icon: <span className="text-base leading-none">💬</span>,
+      onClick: onWhatsApp,
+      disabled: !hasData,
+    },
+    { divider: true },
     {
       label: 'Collaborate',
       icon: <span className="text-gray-400 text-sm leading-none">⇆</span>,

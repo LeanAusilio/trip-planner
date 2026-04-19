@@ -21,6 +21,7 @@ import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
 import { shareToWhatsApp, exportTripCard } from './utils/share'
+import { supabase } from './lib/supabase'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -646,6 +647,7 @@ export default function App() {
           onJoinTrip={collab.joinTrip}
           onStopSharing={collab.stopSharing}
           onClose={() => setShowCollab(false)}
+          supabaseReady={supabase !== null}
         />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />

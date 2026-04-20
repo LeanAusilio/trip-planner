@@ -63,6 +63,8 @@ export default function HeaderMenus({
   onAddHotel,
   onAddActivity,
   onExport,
+  onSummaryPDF,
+  onCopyShareLink,
   onWhatsApp,
   onInstagram,
   onShare,
@@ -96,12 +98,24 @@ export default function HeaderMenus({
 
   const shareItems = [
     {
-      label: 'Export',
+      label: 'Export (ICS / Google)',
       icon: <span className="text-gray-400 text-sm leading-none">↑</span>,
       onClick: onExport,
       disabled: !hasData,
     },
+    {
+      label: 'Full summary PDF',
+      icon: <span className="text-base leading-none">📄</span>,
+      onClick: onSummaryPDF,
+      disabled: !hasData,
+    },
     { divider: true },
+    {
+      label: 'Copy share link',
+      icon: <span className="text-base leading-none">🔗</span>,
+      onClick: onCopyShareLink,
+      disabled: !hasData,
+    },
     {
       label: 'Save as image',
       icon: <span className="text-base leading-none">📸</span>,

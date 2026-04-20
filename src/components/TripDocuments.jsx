@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import { STORAGE_BUCKET, SIGNED_URL_TTL_S, MAX_DOCUMENTS, MAX_DOCUMENT_MB } from '../lib/constants'
 
-const MAX_FILES = 5
-const MAX_FILE_MB = 5
+const MAX_FILES = MAX_DOCUMENTS
+const MAX_FILE_MB = MAX_DOCUMENT_MB
 
 function LinkIcon() {
   return (
@@ -81,7 +82,7 @@ export default function TripDocuments({ documents, tripId, userId, onAdd, onDele
 
     setUploading(true)
     const path = `${userId}/${tripId}/${Date.now()}-${file.name}`
-    const { error } = await supabase.storage.from('Trips-docs').upload(path, file)
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(path, file)
     setUploading(false)
     if (error) { setUploadError(error.message); return }
     onAdd({ id: crypto.randomUUID(), type: 'file', title: file.name, path, size: file.size })
@@ -89,14 +90,14 @@ export default function TripDocuments({ documents, tripId, userId, onAdd, onDele
 
   const handleOpenFile = async (doc) => {
     if (!supabase) return
-    const { data, error } = await supabase.storage.from('Trips-docs').createSignedUrl(doc.path, 3600)
+    const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(doc.path, SIGNED_URL_TTL_S)
     if (error || !data?.signedUrl) return
     window.open(data.signedUrl, '_blank', 'noopener')
   }
 
   const handleDeleteFile = async (doc) => {
     if (doc.type === 'file' && supabase) {
-      await supabase.storage.from('Trips-docs').remove([doc.path]).catch(() => {})
+      await supabase.storage.from(STORAGE_BUCKET).remove([doc.path]).catch((err) => console.error('[Wayfar] storage remove failed', err))
     }
     onDelete(doc.id)
   }

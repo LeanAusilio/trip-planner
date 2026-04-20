@@ -20,6 +20,17 @@ export function isCurrentOrFuture(departure) {
   return startOfDay(new Date(departure)) >= startOfDay(new Date())
 }
 
+export function utcOffsetLabel(ianaTimezone) {
+  if (!ianaTimezone) return null
+  try {
+    const parts = new Intl.DateTimeFormat('en', { timeZone: ianaTimezone, timeZoneName: 'short' })
+      .formatToParts(new Date())
+    return parts.find((p) => p.type === 'timeZoneName')?.value ?? null
+  } catch {
+    return null
+  }
+}
+
 async function geocode(city, countryCode) {
   const key = `${city}|${countryCode}`
   if (geoCache.has(key)) return geoCache.get(key)
@@ -50,10 +61,11 @@ async function fetchWeather(lat, lng) {
   if (!json.current_weather) return null
 
   const data = {
-    temp: Math.round(json.current_weather.temperature),
-    high: Math.round(json.daily.temperature_2m_max[0]),
-    low:  Math.round(json.daily.temperature_2m_min[0]),
-    code: json.current_weather.weathercode,
+    temp:     Math.round(json.current_weather.temperature),
+    high:     Math.round(json.daily.temperature_2m_max[0]),
+    low:      Math.round(json.daily.temperature_2m_min[0]),
+    code:     json.current_weather.weathercode,
+    timezone: json.timezone ?? null,
   }
   wxCache.set(key, { data, ts: Date.now() })
   return data

@@ -24,27 +24,30 @@ import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon
 import HeaderMenus from './components/HeaderMenus'
 import AuthButton from './components/AuthButton'
 import WelcomeScreen from './components/WelcomeScreen'
-import { shareToWhatsApp, exportTripCard } from './utils/share'
+import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl } from './utils/share'
+import { openTripSummaryPrint } from './utils/export'
 import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
 import { loadTrips, saveTrip, deleteCloudTrip } from './lib/cloudTrips'
+import {
+  STORAGE_KEY, DARK_MODE_KEY, GUEST_MODE_KEY,
+  TRIP_LIMIT_GUEST, TRIP_LIMIT_AUTH,
+  CLOUD_SYNC_DEBOUNCE_MS,
+} from './lib/constants'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
   const [dark, setDark] = useState(() => {
-    const stored = localStorage.getItem('trip-planner-dark')
+    const stored = localStorage.getItem(DARK_MODE_KEY)
     if (stored !== null) return stored === 'true'
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
-    localStorage.setItem('trip-planner-dark', String(dark))
+    localStorage.setItem(DARK_MODE_KEY, String(dark))
   }, [dark])
   return [dark, setDark]
 }
-
-// ── Storage ────────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'trip-planner-v3'
 
 function makeTrip(name, data = {}) {
   return {
@@ -89,7 +92,9 @@ function sortByDate(arr, field) {
 export default function App() {
   const [dark, setDark] = useDarkMode()
   const { user, loading: authLoading } = useAuth()
-  const [guestMode, setGuestMode] = useState(() => !!localStorage.getItem('wayfar-guest-mode'))
+  const [guestMode, setGuestMode] = useState(() => !!localStorage.getItem(GUEST_MODE_KEY))
+  const [sharedTrip, setSharedTrip] = useState(() => deserializeTripFromUrl())
+  const [shareCopied, setShareCopied] = useState(false)
   const showWelcome = !authLoading && !user && !guestMode
   const [trips, setTrips] = useState(() => loadState().trips)
   const [activeTripId, setActiveTripId] = useState(() => { const s = loadState(); return s.activeTripId || s.trips[0]?.id })
@@ -121,17 +126,17 @@ export default function App() {
         setTrips(cloud)
         setActiveTripId((prev) => cloud.find((t) => t.id === prev)?.id ?? cloud[0].id)
       } else {
-        localTripsRef.current.forEach((t) => saveTrip(user.id, t).catch(() => {}))
+        localTripsRef.current.forEach((t) => saveTrip(user.id, t).catch((err) => console.error('[Wayfar] cloud migration failed', err)))
       }
-    }).catch(() => {})
+    }).catch((err) => console.error('[Wayfar] loadTrips failed', err))
   }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync changes to cloud when signed in (debounced 800ms)
+  // Sync changes to cloud when signed in
   useEffect(() => {
     if (!user?.id || !supabase) return
     const timer = setTimeout(() => {
-      trips.forEach((t) => saveTrip(user.id, t).catch(() => {}))
-    }, 800)
+      trips.forEach((t) => saveTrip(user.id, t).catch((err) => console.error('[Wayfar] saveTrip failed', err)))
+    }, CLOUD_SYNC_DEBOUNCE_MS)
     return () => clearTimeout(timer)
   }, [trips, user?.id])
 
@@ -184,7 +189,7 @@ export default function App() {
     setShowQuickStart(false)
   }, [])
 
-  const tripLimit = user ? 5 : 3
+  const tripLimit = user ? TRIP_LIMIT_AUTH : TRIP_LIMIT_GUEST
 
   const addTrip = (name) => {
     if (trips.length >= tripLimit) return
@@ -194,7 +199,7 @@ export default function App() {
     setSidebarOpen(false)
   }
   const deleteTrip = (id) => {
-    if (user?.id && supabase) deleteCloudTrip(id).catch(() => {})
+    if (user?.id && supabase) deleteCloudTrip(id).catch((err) => console.error('[Wayfar] deleteCloudTrip failed', err))
     setTrips((prev) => {
       const next = prev.filter((t) => t.id !== id)
       if (next.length === 0) {
@@ -312,6 +317,26 @@ export default function App() {
     window.addEventListener('mouseup', onUp)
   }, [])
 
+  const handleSaveSharedTrip = () => {
+    if (!sharedTrip || trips.length >= tripLimit) return
+    const trip = makeTrip(sharedTrip.name, sharedTrip)
+    setTrips((prev) => [...prev, trip])
+    setActiveTripId(trip.id)
+    setSharedTrip(null)
+    window.history.replaceState(null, '', window.location.pathname)
+  }
+
+  const handleCopyShareLink = async () => {
+    if (!activeTrip) return
+    try {
+      await copyTripShareLink(activeTrip)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 2500)
+    } catch (err) {
+      console.error('[Wayfar] copy share link failed', err)
+    }
+  }
+
   const handleDetailEdit = () => {
     if (!selectedItem) return
     if (selectedItem.kind === 'destination') setModal({ type: 'destination', editing: selectedItem.data })
@@ -366,6 +391,43 @@ export default function App() {
         tripLimit={tripLimit}
       />
 
+      {/* ── Shared trip banner ── */}
+      {sharedTrip && (
+        <div className="relative z-20 bg-sky-50 dark:bg-sky-950 border-b border-sky-100 dark:border-sky-900 px-4 py-2.5">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-sm text-sky-700 dark:text-sky-300">
+              Viewing shared trip: <strong>{sharedTrip.name}</strong>
+              <span className="ml-2 text-xs text-sky-400 font-normal">({sharedTrip.destinations?.length ?? 0} destinations)</span>
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSaveSharedTrip}
+                disabled={trips.length >= tripLimit}
+                className="text-xs font-medium bg-sky-600 text-white px-3 py-1.5 rounded-lg hover:bg-sky-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save to my trips
+              </button>
+              <button
+                onClick={() => {
+                  setSharedTrip(null)
+                  window.history.replaceState(null, '', window.location.pathname)
+                }}
+                className="text-xs text-sky-500 hover:text-sky-700 dark:hover:text-sky-300 px-2 py-1.5 transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Share copied toast ── */}
+      {shareCopied && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs font-medium px-4 py-2.5 rounded-full shadow-lg pointer-events-none">
+          Link copied to clipboard ✓
+        </div>
+      )}
+
       {/* ── Header ── */}
       <header className="relative z-20 border-b border-gray-100 dark:border-gray-800 px-4 sm:px-8 py-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
         <div className="flex items-center justify-between max-w-6xl mx-auto gap-2">
@@ -410,7 +472,7 @@ export default function App() {
           </div>
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
             <AuthButton user={user} onShowWelcome={() => {
-              localStorage.removeItem('wayfar-guest-mode')
+              localStorage.removeItem(GUEST_MODE_KEY)
               setGuestMode(false)
             }} />
             <HeaderMenus
@@ -420,6 +482,8 @@ export default function App() {
               onAddHotel={() => setModal({ type: 'hotel', editing: null })}
               onAddActivity={() => setModal({ type: 'activity', editing: null, context: destinations[0] ?? null })}
               onExport={() => setShowExport(true)}
+              onSummaryPDF={() => openTripSummaryPrint({ name: activeTrip?.name, destinations, hotels, activities, transports })}
+              onCopyShareLink={handleCopyShareLink}
               onWhatsApp={() => shareToWhatsApp(destinations, collab.isCollaborating ? collab.tripCode : undefined)}
               onInstagram={() => exportTripCard(destinations, activeTrip?.name)}
               onShare={() => setShowCollab(true)}
@@ -711,7 +775,7 @@ export default function App() {
       {showWelcome && (
         <WelcomeScreen
           onContinueAsGuest={() => {
-            localStorage.setItem('wayfar-guest-mode', 'true')
+            localStorage.setItem(GUEST_MODE_KEY, 'true')
             setGuestMode(true)
           }}
         />

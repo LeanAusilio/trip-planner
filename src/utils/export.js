@@ -1,4 +1,5 @@
-import { format, addDays, differenceInDays } from 'date-fns'
+import { format, addDays, differenceInDays, startOfDay } from 'date-fns'
+import { APP_NAME, APP_URL } from '../lib/constants'
 
 // ── Shared ─────────────────────────────────────────────────────────────────
 export function activityEmoji(type) {
@@ -296,6 +297,143 @@ function buildPrintHTML(destinations, hotels, activities) {
   ${hotels.length > 0 ? `<h2>Hotels</h2><table>${hotelRows}</table>` : ''}
 
   <button class="print-btn no-print" onclick="window.print()">Save as PDF</button>
+</body>
+</html>`
+}
+
+// ── Full trip summary print ──────────────────────────────────────────────────
+
+export function openTripSummaryPrint({ name, destinations, hotels, activities, transports }) {
+  const win = window.open('', '_blank', 'width=820,height=960')
+  if (!win) {
+    alert('Please allow popups for this site to use PDF export.')
+    return
+  }
+  win.document.write(buildSummaryHTML({ name, destinations, hotels, activities, transports }))
+  win.document.close()
+  win.focus()
+  setTimeout(() => win.print(), 700)
+}
+
+function buildSummaryHTML({ name, destinations, hotels, activities, transports }) {
+  const today = format(new Date(), 'MMMM d, yyyy')
+  const hasData = destinations.length > 0
+
+  const tripStart = hasData ? new Date(destinations[0].arrival) : null
+  const tripEnd   = hasData ? new Date(destinations[destinations.length - 1].departure) : null
+  const totalNights = hasData ? differenceInDays(startOfDay(tripEnd), startOfDay(tripStart)) : 0
+
+  const headerMeta = hasData
+    ? `${format(tripStart, 'MMM d, yyyy')} – ${format(tripEnd, 'MMM d, yyyy')} &nbsp;·&nbsp; ${totalNights} nights &nbsp;·&nbsp; ${destinations.length} destination${destinations.length !== 1 ? 's' : ''}`
+    : ''
+
+  const destBlocks = destinations.map((dest) => {
+    const nights = differenceInDays(new Date(dest.departure), new Date(dest.arrival))
+    const destActivities = activities
+      .filter((a) => a.destinationId === dest.id)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+    const destHotels = hotels.filter((h) => {
+      const hIn = new Date(h.checkIn), hOut = new Date(h.checkOut)
+      const arr = new Date(dest.arrival), dep = new Date(dest.departure)
+      return hIn < dep && hOut > arr
+    })
+    const typeColor  = dest.type === 'vacation' ? '#0369a1' : '#6d28d9'
+    const typeBg     = dest.type === 'vacation' ? '#f0f9ff' : '#f5f3ff'
+
+    const hotelLines = destHotels.map((h) =>
+      `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+        <span style="font-size:13px;">🛏</span>
+        <span style="font-size:12px;color:#57534e;">${h.name} &nbsp;<span style="color:#d1d5db;">·</span>&nbsp; ${format(new Date(h.checkIn), 'MMM d')} – ${format(new Date(h.checkOut), 'MMM d')}</span>
+      </div>`
+    ).join('')
+
+    const activityLines = destActivities.map((a) =>
+      `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+        <span style="font-size:13px;">${activityEmoji(a.type)}</span>
+        <span style="font-size:12px;color:#374151;font-weight:500;">${a.name}</span>
+        <span style="font-size:11px;color:#9ca3af;">${format(new Date(a.date), 'MMM d')}</span>
+      </div>`
+    ).join('')
+
+    return `
+      <div style="margin-bottom:20px;border:1px solid #f3f4f6;border-radius:10px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fafafa;border-bottom:1px solid #f3f4f6;">
+          <img src="https://flagcdn.com/20x15/${dest.countryCode.toLowerCase()}.png" width="20" height="15" alt="" style="border-radius:2px;flex-shrink:0;" />
+          <span style="font-size:15px;font-weight:600;color:#111;">${dest.city}</span>
+          <span style="font-size:12px;color:#9ca3af;">${dest.country}</span>
+          <span style="margin-left:auto;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;background:${typeBg};color:${typeColor};">${dest.type}</span>
+        </div>
+        <div style="padding:12px 16px;">
+          <span style="font-size:12px;color:#6b7280;">${format(new Date(dest.arrival), 'MMM d')} – ${format(new Date(dest.departure), 'MMM d, yyyy')}</span>
+          <span style="font-size:11px;color:#d1d5db;margin:0 6px;">·</span>
+          <span style="font-size:12px;color:#6b7280;">${nights} night${nights !== 1 ? 's' : ''}</span>
+          ${dest.airline || dest.flightNumber ? `<span style="font-size:11px;color:#d1d5db;margin:0 6px;">·</span><span style="font-size:12px;color:#6b7280;">${[dest.airline, dest.flightNumber].filter(Boolean).join(' ')}</span>` : ''}
+          ${hotelLines}
+          ${activityLines}
+        </div>
+      </div>`
+  }).join('')
+
+  const transportRows = transports.length === 0 ? '' : `
+    <h2>Transports</h2>
+    <table>
+      ${transports.map((t) => `
+        <tr>
+          <td style="padding:10px 0;border-top:1px solid #f3f4f6;font-size:13px;color:#111;font-weight:500;">${t.fromCity} → ${t.toCity}</td>
+          <td style="padding:10px 0;border-top:1px solid #f3f4f6;text-align:right;font-size:12px;color:#6b7280;white-space:nowrap;">
+            ${t.type} · ${format(new Date(t.departureDate), 'MMM d, yyyy')}${t.carrier ? ` · ${t.carrier}` : ''}
+          </td>
+        </tr>`).join('')}
+    </table>`
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${name || 'Trip Summary'} — ${APP_NAME}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: white; color: #111;
+      padding: 48px 56px;
+      max-width: 740px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media print { body { padding: 24px 32px; } }
+    table { width: 100%; border-collapse: collapse; }
+    h2 {
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #9ca3af; margin: 32px 0 12px;
+    }
+    .print-btn {
+      display: inline-block; margin-top: 32px;
+      padding: 8px 20px; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 12px; font-family: inherit; cursor: pointer; background: white;
+    }
+    @media print { .print-btn { display: none; } }
+  </style>
+</head>
+<body>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+    <div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;color:#0369a1;text-transform:uppercase;margin-bottom:6px;">${APP_NAME}</div>
+      <h1 style="font-size:26px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;">${name || 'Trip Summary'}</h1>
+      ${headerMeta ? `<p style="font-size:12px;color:#9ca3af;margin-top:6px;">${headerMeta}</p>` : ''}
+    </div>
+    <div style="font-size:10px;color:#d1d5db;text-align:right;padding-top:4px;">
+      Printed ${today}<br/>${APP_URL}
+    </div>
+  </div>
+
+  ${destinations.length > 0 ? `<h2>Itinerary</h2>${destBlocks}` : ''}
+  ${transportRows}
+
+  <button class="print-btn" onclick="window.print()">Save as PDF</button>
 </body>
 </html>`
 }

@@ -1,4 +1,5 @@
 import { format, differenceInDays } from 'date-fns'
+import { APP_URL } from '../lib/constants'
 
 function flagEmoji(countryCode) {
   if (!countryCode || countryCode.length !== 2) return '📍'
@@ -156,4 +157,36 @@ export function exportTripCard(destinations, tripName) {
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
+}
+
+// ── Read-only share link ────────────────────────────────────────────────────
+
+export function serializeTripToUrl(trip) {
+  const payload = {
+    name: trip.name,
+    destinations: trip.destinations,
+    hotels: trip.hotels,
+    activities: trip.activities,
+    transports: trip.transports,
+    currency: trip.currency,
+  }
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+  return `${window.location.origin}${window.location.pathname}?view=${encoded}`
+}
+
+export function deserializeTripFromUrl() {
+  const encoded = new URLSearchParams(window.location.search).get('view')
+  if (!encoded) return null
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(encoded))))
+  } catch {
+    console.error('[Wayfar] Could not parse shared trip from URL')
+    return null
+  }
+}
+
+export async function copyTripShareLink(trip) {
+  const url = serializeTripToUrl(trip)
+  await navigator.clipboard.writeText(url)
+  return url
 }

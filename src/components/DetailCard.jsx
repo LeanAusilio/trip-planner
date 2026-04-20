@@ -1,7 +1,7 @@
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import { Flag } from './CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
-import { useCurrentWeather, wmoEmoji, isCurrentOrFuture } from '../hooks/useCurrentWeather'
+import { useCurrentWeather, wmoEmoji, isCurrentOrFuture, utcOffsetLabel } from '../hooks/useCurrentWeather'
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -50,12 +50,17 @@ function Section({ title, children }) {
 function WeatherSection({ city, countryCode, departure }) {
   const weather = useCurrentWeather(city, countryCode, isCurrentOrFuture(departure))
   if (!weather) return null
+  const tz = utcOffsetLabel(weather.timezone)
   return (
-    <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+    <div className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400">
       <span>{wmoEmoji(weather.code)}</span>
       <span>{weather.temp}°</span>
-      <span className="text-gray-400 dark:text-gray-500">·</span>
+      <span className="text-gray-300 dark:text-gray-600">·</span>
       <span className="text-xs text-gray-400 dark:text-gray-500">↑{weather.high}° ↓{weather.low}°</span>
+      {tz && <>
+        <span className="text-gray-300 dark:text-gray-600">·</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">{tz}</span>
+      </>}
     </div>
   )
 }

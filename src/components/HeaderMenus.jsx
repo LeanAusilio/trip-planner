@@ -68,6 +68,7 @@ export default function HeaderMenus({
   onWhatsApp,
   onInstagram,
   onShare,
+  onTravelStats,
   isCollaborating,
   syncStatus,
 }) {
@@ -147,6 +148,15 @@ export default function HeaderMenus({
     <div className="flex items-center gap-2 flex-shrink-0">
       <DropdownMenu label="+" items={addItems} align="right" />
       <DropdownMenu label="↑" items={shareItems} align="right" />
+      {hasData && (
+        <button
+          onClick={onTravelStats}
+          title="Travel Stats"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 text-sm"
+        >
+          📊
+        </button>
+      )}
     </div>
   )
 }

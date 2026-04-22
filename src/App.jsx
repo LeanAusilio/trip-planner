@@ -18,7 +18,7 @@ import WeatherWidget from './components/WeatherWidget'
 import WeatherBadge from './components/WeatherBadge'
 import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
-import { createDemoTrip } from './lib/demoData'
+import { createDemoTrips } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
@@ -139,12 +139,14 @@ export default function App() {
     if (!params.has('demo')) return
     window.history.replaceState(null, '', window.location.pathname + window.location.hash)
     setTrips((prev) => {
-      if (prev.length >= 3) return prev
       if (prev.some((t) => t.name === 'Europe Demo')) return prev
-      const demo = createDemoTrip()
-      const trip = makeTrip(demo.name, demo)
-      setActiveTripId(trip.id)
-      return [...prev, trip]
+      const [europeData, asiaData] = createDemoTrips()
+      const europeTrip = makeTrip(europeData.name, europeData)
+      const asiaTrip   = makeTrip(asiaData.name, asiaData)
+      setActiveTripId(europeTrip.id)
+      // Drop any empty default "My Trip" placeholder so the sidebar stays clean
+      const existing = prev.filter((t) => !(t.name === 'My Trip' && t.destinations.length === 0))
+      return [...existing, asiaTrip, europeTrip]
     })
   }, [])
 

@@ -18,22 +18,19 @@ import WeatherWidget from './components/WeatherWidget'
 import WeatherBadge from './components/WeatherBadge'
 import MapView from './components/MapView'
 import SummaryDashboard from './components/SummaryDashboard'
-import { createDemoTrip } from './lib/demoData'
+import { createDemoTrips } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
+import TravelStats from './components/TravelStats'
 import AuthButton from './components/AuthButton'
 import WelcomeScreen from './components/WelcomeScreen'
 import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl } from './utils/share'
 import { openTripSummaryPrint } from './utils/export'
 import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
-import { loadTrips, saveTrip, deleteCloudTrip } from './lib/cloudTrips'
-import {
-  STORAGE_KEY, DARK_MODE_KEY, GUEST_MODE_KEY,
-  TRIP_LIMIT_GUEST, TRIP_LIMIT_AUTH,
-  CLOUD_SYNC_DEBOUNCE_MS,
-} from './lib/constants'
+import { useCloudSync } from './hooks/useCloudSync'
+import { STORAGE_KEY, DARK_MODE_KEY, GUEST_MODE_KEY, TRIP_LIMIT_GUEST, TRIP_LIMIT_AUTH } from './lib/constants'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -98,13 +95,13 @@ export default function App() {
   const showWelcome = !authLoading && !user && !guestMode
   const [trips, setTrips] = useState(() => loadState().trips)
   const [activeTripId, setActiveTripId] = useState(() => { const s = loadState(); return s.activeTripId || s.trips[0]?.id })
-  const localTripsRef = useRef(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const [modal, setModal] = useState(null)
   const [showExport, setShowExport] = useState(false)
   const [showQuickStart, setShowQuickStart] = useState(false)
   const [showCollab, setShowCollab] = useState(false)
+  const [showStats, setShowStats] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [destSplit, setDestSplit] = useState(63)
   const [destsOpen, setDestsOpen] = useState(true)
@@ -117,28 +114,7 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips, activeTripId }))
   }, [trips, activeTripId])
 
-  // On sign-in: load cloud trips, or migrate local trips up
-  useEffect(() => {
-    if (!user?.id || !supabase) return
-    if (localTripsRef.current === null) localTripsRef.current = trips
-    loadTrips(user.id).then((cloud) => {
-      if (cloud.length > 0) {
-        setTrips(cloud)
-        setActiveTripId((prev) => cloud.find((t) => t.id === prev)?.id ?? cloud[0].id)
-      } else {
-        localTripsRef.current.forEach((t) => saveTrip(user.id, t).catch((err) => console.error('[Wayfar] cloud migration failed', err)))
-      }
-    }).catch((err) => console.error('[Wayfar] loadTrips failed', err))
-  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Sync changes to cloud when signed in
-  useEffect(() => {
-    if (!user?.id || !supabase) return
-    const timer = setTimeout(() => {
-      trips.forEach((t) => saveTrip(user.id, t).catch((err) => console.error('[Wayfar] saveTrip failed', err)))
-    }, CLOUD_SYNC_DEBOUNCE_MS)
-    return () => clearTimeout(timer)
-  }, [trips, user?.id])
+  const { deleteFromCloud } = useCloudSync({ userId: user?.id, trips, setTrips, setActiveTripId })
 
   // ── Active trip helpers ──
   const activeTrip = trips.find((t) => t.id === activeTripId) || trips[0]
@@ -163,12 +139,14 @@ export default function App() {
     if (!params.has('demo')) return
     window.history.replaceState(null, '', window.location.pathname + window.location.hash)
     setTrips((prev) => {
-      if (prev.length >= 3) return prev
       if (prev.some((t) => t.name === 'Europe Demo')) return prev
-      const demo = createDemoTrip()
-      const trip = makeTrip(demo.name, demo)
-      setActiveTripId(trip.id)
-      return [...prev, trip]
+      const [europeData, asiaData] = createDemoTrips()
+      const europeTrip = makeTrip(europeData.name, europeData)
+      const asiaTrip   = makeTrip(asiaData.name, asiaData)
+      setActiveTripId(europeTrip.id)
+      // Drop any empty default "My Trip" placeholder so the sidebar stays clean
+      const existing = prev.filter((t) => !(t.name === 'My Trip' && t.destinations.length === 0))
+      return [...existing, asiaTrip, europeTrip]
     })
   }, [])
 
@@ -199,7 +177,7 @@ export default function App() {
     setSidebarOpen(false)
   }
   const deleteTrip = (id) => {
-    if (user?.id && supabase) deleteCloudTrip(id).catch((err) => console.error('[Wayfar] deleteCloudTrip failed', err))
+    deleteFromCloud(id)
     setTrips((prev) => {
       const next = prev.filter((t) => t.id !== id)
       if (next.length === 0) {
@@ -487,6 +465,7 @@ export default function App() {
               onWhatsApp={() => shareToWhatsApp(destinations, collab.isCollaborating ? collab.tripCode : undefined)}
               onInstagram={() => exportTripCard(destinations, activeTrip?.name)}
               onShare={() => setShowCollab(true)}
+              onTravelStats={() => setShowStats(true)}
               isCollaborating={collab.isCollaborating}
               syncStatus={collab.syncStatus}
             />
@@ -769,6 +748,14 @@ export default function App() {
           onStopSharing={collab.stopSharing}
           onClose={() => setShowCollab(false)}
           supabaseReady={supabase !== null}
+        />
+      )}
+      {showStats && (
+        <TravelStats
+          trips={trips}
+          user={user}
+          dark={dark}
+          onClose={() => setShowStats(false)}
         />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />

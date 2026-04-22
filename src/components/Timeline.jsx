@@ -166,6 +166,7 @@ export default function Timeline({
   onEditHotel, onDeleteHotel,
   onEditTransport, onDeleteTransport,
   onClickDest, onClickHotel, onClickActivity, onClickTransport,
+  onDragStart, onDragComplete,
 }) {
   const [zoomIdx, setZoomIdx] = useState(2) // default: index 2 = 36px
   const dayWidth = ZOOM_LEVELS[zoomIdx]
@@ -222,6 +223,7 @@ export default function Timeline({
   const startDrag = (e, dest, mode) => {
     e.preventDefault()
     e.stopPropagation()
+    onDragStart?.()
     dragState.current = {
       id: dest.id,
       mode,
@@ -285,6 +287,7 @@ export default function Timeline({
   // A mouseup with hasMoved=false and mode='move' means the user clicked without
   // dragging — treat it as a selection rather than a completed drag.
   const handleMouseUp = useCallback(() => {
+    const wasDrag = dragState.current?.hasMoved
     if (dragState.current && !dragState.current.hasMoved && dragState.current.mode === 'move') {
       const dest = destinations.find((d) => d.id === dragState.current.id)
       if (dest && onClickDest) onClickDest(dest)
@@ -294,7 +297,8 @@ export default function Timeline({
     setDragMode(null)
     document.body.style.cursor = ''
     document.body.classList.remove('dragging')
-  }, [destinations, onClickDest])
+    if (wasDrag) onDragComplete?.()
+  }, [destinations, onClickDest, onDragComplete])
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove)
@@ -434,7 +438,20 @@ export default function Timeline({
               <div key={dest.id} style={{ position: 'absolute', left: 0, right: 0, top: rowTop, height: ROW_H }}>
                 {/* No stripe — solid background from container */}
 
-                {/* Live date tooltip while resizing */}
+                {/* Live date tooltip while dragging/resizing */}
+                {isActive && dragMode === 'move' && (
+                  <div style={{
+                    position: 'absolute',
+                    left: blockX + blockW / 2 - 40,
+                    top: 4 - 26,
+                    background: '#111', color: '#fff',
+                    borderRadius: 5, padding: '3px 7px',
+                    fontSize: 10, fontWeight: 500,
+                    whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20,
+                  }}>
+                    {format(new Date(dest.arrival), 'MMM d')} → {format(new Date(dest.departure), 'MMM d')}
+                  </div>
+                )}
                 {isActive && dragMode === 'resize-left' && (
                   <div style={{
                     position: 'absolute',

@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { format, parseISO, startOfDay } from 'date-fns'
 import CitySearch from './CitySearch'
 
-export default function AddDestinationModal({ editing, destinations, onAdd, onUpdate, onClose }) {
+export default function AddDestinationModal({ editing, destinations, onAdd, onUpdate, onClose, lastDeparture = '' }) {
   const [city, setCity] = useState(
     editing
       ? { city: editing.city, country: editing.country, countryCode: editing.countryCode }
       : null
   )
   const [arrival, setArrival] = useState(
-    editing ? format(new Date(editing.arrival), 'yyyy-MM-dd') : ''
+    editing ? format(new Date(editing.arrival), 'yyyy-MM-dd') : (lastDeparture || '')
   )
   const [departure, setDeparture] = useState(
     editing ? format(new Date(editing.departure), 'yyyy-MM-dd') : ''

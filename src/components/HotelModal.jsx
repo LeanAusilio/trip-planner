@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { format, parseISO, startOfDay, isBefore } from 'date-fns'
 import { BedIcon } from './Icons'
 
-export default function HotelModal({ editing, hotels, onSave, onClose }) {
+export default function HotelModal({ editing, hotels, onSave, onClose, activeDestination = null }) {
   const [name, setName] = useState(editing?.name || '')
   const [checkIn, setCheckIn] = useState(
-    editing ? format(new Date(editing.checkIn), 'yyyy-MM-dd') : ''
+    editing ? format(new Date(editing.checkIn), 'yyyy-MM-dd') : (activeDestination?.arrival || '')
   )
   const [checkOut, setCheckOut] = useState(
-    editing ? format(new Date(editing.checkOut), 'yyyy-MM-dd') : ''
+    editing ? format(new Date(editing.checkOut), 'yyyy-MM-dd') : (activeDestination?.departure || '')
   )
   const [address, setAddress] = useState(editing?.address || '')
   const [confirmationNumber, setConfirmationNumber] = useState(editing?.confirmationNumber || '')

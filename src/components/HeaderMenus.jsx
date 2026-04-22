@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { ActivityIcon, BedIcon, TransportIcon } from './Icons'
 
-function DropdownMenu({ label, items, align = 'right' }) {
+function DropdownMenu({ label, items, align = 'right', accent = false }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -25,7 +25,11 @@ function DropdownMenu({ label, items, align = 'right' }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 text-sm font-medium"
+        className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-colors text-sm font-medium ${
+          accent
+            ? 'bg-sky-500 border-sky-500 text-white hover:bg-sky-600 hover:border-sky-600 dark:bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-500'
+            : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+        }`}
         aria-expanded={open}
       >
         {label}
@@ -146,13 +150,13 @@ export default function HeaderMenus({
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-      <DropdownMenu label="+" items={addItems} align="right" />
+      <DropdownMenu label="+" items={addItems} align="right" accent />
       <DropdownMenu label="↑" items={shareItems} align="right" />
       {hasData && (
         <button
           onClick={onTravelStats}
           title="Travel Stats"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 text-sm"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors text-sm"
         >
           📊
         </button>

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { uuid } from './lib/uuid'
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import QuickStartModal from './components/quickstart/QuickStartModal'
+import InlineDestinationCreator from './components/InlineDestinationCreator'
 import CollaborationModal from './components/CollaborationModal'
 import { useCollaboration } from './hooks/useCollaboration'
 import Timeline from './components/Timeline'
@@ -108,6 +109,9 @@ export default function App() {
   const [hotelsOpen, setHotelsOpen] = useState(true)
   const [transportsOpen, setTransportsOpen] = useState(true)
   const twoColRef = useRef(null)
+  const [undoSnapshot, setUndoSnapshot] = useState(null)
+  const [undoVisible, setUndoVisible] = useState(false)
+  const undoTimerRef = useRef(null)
 
   // Persist to localStorage
   useEffect(() => {
@@ -191,6 +195,47 @@ export default function App() {
   }
   const renameTrip = (id, name) => {
     setTrips((prev) => prev.map((t) => (t.id === id ? { ...t, name } : t)))
+  }
+
+  // ── Undo ──
+  const snapshotForUndo = useCallback(() => {
+    setUndoSnapshot({ trips, activeTripId })
+  }, [trips, activeTripId])
+
+  const showUndoToast = useCallback(() => {
+    setUndoVisible(true)
+    clearTimeout(undoTimerRef.current)
+    undoTimerRef.current = setTimeout(() => setUndoVisible(false), 5000)
+  }, [])
+
+  const handleUndo = () => {
+    if (undoSnapshot) {
+      setTrips(undoSnapshot.trips)
+      setActiveTripId(undoSnapshot.activeTripId)
+    }
+    setUndoVisible(false)
+    clearTimeout(undoTimerRef.current)
+  }
+
+  // ── Inline first-destination creator ──
+  const handleInlineAdd = ({ city, arrival, departure }) => {
+    const dest = {
+      id: uuid(),
+      city: city.city,
+      country: city.country,
+      countryCode: city.countryCode,
+      lat: city.lat ?? null,
+      lng: city.lng ?? null,
+      arrival,
+      departure,
+      type: 'vacation',
+    }
+    const newTrip = makeTrip(city.city, { destinations: [dest] })
+    setTrips((prev) => {
+      const existing = prev.filter((t) => !(t.name === 'My Trip' && t.destinations.length === 0))
+      return [...existing, newTrip]
+    })
+    setActiveTripId(newTrip.id)
   }
 
   // ── Destinations ──
@@ -481,18 +526,7 @@ export default function App() {
       {/* ── Main ── */}
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8 dark:text-gray-100">
         {!hasData ? (
-          <div className="flex flex-col items-center justify-center py-40 gap-4">
-            <div className="text-3xl" style={{ filter: 'grayscale(1)', opacity: 0.18 }}>✈</div>
-            <div className="text-center">
-              <p className="text-sm text-gray-400 mb-1">No trips planned yet</p>
-              <p className="text-xs text-gray-300">Let's get you somewhere.</p>
-            </div>
-            <button
-              onClick={() => setShowQuickStart(true)}
-              data-testid="plan-a-trip-button"
-              className="text-sm border border-gray-200 px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-gray-500 font-medium"
-            >Plan a trip →</button>
-          </div>
+          <InlineDestinationCreator onAdd={handleInlineAdd} />
         ) : (
           <>
             {/* Timeline */}
@@ -519,6 +553,8 @@ export default function App() {
                 onClickTransport={openTransportCard}
                 onEditTransport={(t) => setModal({ type: 'transport', editing: t })}
                 onDeleteTransport={deleteTransport}
+                onDragStart={snapshotForUndo}
+                onDragComplete={showUndoToast}
               />
             </section>
 
@@ -713,6 +749,9 @@ export default function App() {
         <AddDestinationModal
           editing={modal.editing}
           destinations={destinations}
+          lastDeparture={!modal.editing && destinations.length > 0
+            ? [...destinations].sort((a, b) => a.departure < b.departure ? 1 : -1)[0].departure
+            : ''}
           onAdd={addDestination}
           onUpdate={(updates) => { updateDestination(modal.editing.id, updates); setModal(null) }}
           onClose={() => setModal(null)}
@@ -728,6 +767,9 @@ export default function App() {
         <HotelModal
           editing={modal.editing}
           hotels={hotels}
+          activeDestination={!modal.editing ? (destinations.length > 0
+            ? [...destinations].sort((a, b) => a.departure < b.departure ? 1 : -1)[0]
+            : null) : null}
           onSave={(data) => { if (data.id) updateHotel(data.id, data); else addHotel(data) }}
           onClose={() => setModal(null)}
         />
@@ -759,6 +801,23 @@ export default function App() {
         />
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />
+
+      {/* Mobile FAB — add destination */}
+      <button
+        onClick={() => setModal({ type: 'destination', editing: null })}
+        className="sm:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-sky-500 text-white text-3xl shadow-lg flex items-center justify-center hover:bg-sky-600 active:scale-95 transition-all"
+        aria-label="Add destination"
+      >+</button>
+
+      {/* Undo toast */}
+      {undoVisible && (
+        <div className="fixed bottom-24 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm rounded-xl px-4 py-2.5 shadow-lg">
+          <span>Move applied</span>
+          <button onClick={handleUndo} className="font-semibold underline">Undo</button>
+          <button onClick={() => setUndoVisible(false)} className="opacity-50 hover:opacity-100 ml-1">✕</button>
+        </div>
+      )}
+
       {showWelcome && (
         <WelcomeScreen
           onContinueAsGuest={() => {

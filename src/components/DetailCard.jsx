@@ -382,8 +382,8 @@ export default function DetailCard({ item, onClose, onEdit }) {
           )}
         </div>
 
-        {/* Footer — hidden on mobile (view-only) */}
-        <div className="hidden sm:block px-5 py-4 border-t border-gray-100 dark:border-gray-800">
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-gray-100 dark:border-gray-800">
           <button
             data-testid="detail-card-edit"
             onClick={onEdit}

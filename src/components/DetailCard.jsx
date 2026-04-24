@@ -1,4 +1,5 @@
 import { format, differenceInDays, startOfDay } from 'date-fns'
+import { formatCurrency } from '../utils/formatUtils'
 import { Flag } from './CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon } from './Icons'
 import { useCurrentWeather, wmoEmoji, isCurrentOrFuture, utcOffsetLabel } from '../hooks/useCurrentWeather'
@@ -119,7 +120,7 @@ function DestinationCard({ dest, relatedActivities, relatedHotels }) {
       {/* Budget */}
       {dest.budget != null && (
         <Section title="Budget">
-          <Row label="Allocated" value={`$${dest.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+          <Row label="Allocated" value={`$${formatCurrency(dest.budget)}`} />
         </Section>
       )}
 
@@ -212,7 +213,7 @@ function HotelCard({ hotel }) {
 
       {hotel.budget != null && (
         <Section title="Budget">
-          <Row label="Cost" value={`$${hotel.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+          <Row label="Cost" value={`$${formatCurrency(hotel.budget)}`} />
         </Section>
       )}
     </div>
@@ -244,7 +245,7 @@ function ActivityCard({ activity, destination }) {
 
       <Section title="Details">
         {activity.budget != null && (
-          <Row label="Cost" value={`$${activity.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+          <Row label="Cost" value={`$${formatCurrency(activity.budget)}`} />
         )}
         <Row label="Address" value={activity.address} />
         {activity.type === 'medical' && (
@@ -316,7 +317,7 @@ function TransportCard({ transport }) {
 
       {transport.budget != null && (
         <Section title="Budget">
-          <Row label="Cost" value={`$${transport.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+          <Row label="Cost" value={`$${formatCurrency(transport.budget)}`} />
         </Section>
       )}
 
@@ -387,7 +388,7 @@ export default function DetailCard({ item, onClose, onEdit }) {
           <button
             data-testid="detail-card-edit"
             onClick={onEdit}
-            className="w-full text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-lg py-2.5 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
+            className="w-full text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-xl py-2.5 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
           >
             Edit
           </button>

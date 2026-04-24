@@ -80,16 +80,18 @@ export default function SummaryDashboard({ destinations, hotels, activities, tra
   const [displayCurrency, setDisplayCurrency] = useState(currency)
   const [rate, setRate] = useState(1)
   const [loadingRate, setLoadingRate] = useState(false)
+  const [rateError, setRateError] = useState(false)
 
   useEffect(() => { setDisplayCurrency(currency) }, [currency])
 
   useEffect(() => {
-    if (displayCurrency === currency) { setRate(1); return }
+    if (displayCurrency === currency) { setRate(1); setRateError(false); return }
     setLoadingRate(true)
+    setRateError(false)
     fetch(`https://api.frankfurter.app/latest?from=${currency}&to=${displayCurrency}`)
       .then((r) => r.json())
       .then((data) => setRate(data.rates?.[displayCurrency] ?? 1))
-      .catch(() => setRate(1))
+      .catch(() => { setRate(1); setRateError(true) })
       .finally(() => setLoadingRate(false))
   }, [currency, displayCurrency])
 
@@ -162,7 +164,10 @@ export default function SummaryDashboard({ destinations, hotels, activities, tra
           {loadingRate && (
             <span className="text-xs text-gray-400 dark:text-gray-500">fetching rate…</span>
           )}
-          {isConverting && !loadingRate && (
+          {rateError && !loadingRate && (
+            <span className="text-xs text-red-400">rate unavailable — showing original currency</span>
+          )}
+          {isConverting && !loadingRate && !rateError && (
             <span className="text-xs text-gray-500 dark:text-gray-400">
               1 {currency} = {rate.toFixed(4)} {displayCurrency}
             </span>

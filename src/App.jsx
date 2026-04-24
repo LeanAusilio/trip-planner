@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { uuid } from './lib/uuid'
 import { format, differenceInDays, startOfDay } from 'date-fns'
+import { formatCurrency } from './utils/formatUtils'
 import QuickStartModal from './components/quickstart/QuickStartModal'
 import InlineDestinationCreator from './components/InlineDestinationCreator'
 import CollaborationModal from './components/CollaborationModal'
@@ -490,7 +491,7 @@ export default function App() {
                 {hasBudget && <>
                   <span className="text-xs text-gray-400">·</span>
                   <span className="text-xs px-1.5 py-0.5 rounded-full font-medium" style={{ background: '#f0fdf4', color: '#166534' }}>
-                    ${totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${formatCurrency(totalBudget)}
                   </span>
                 </>}
               </div>
@@ -606,7 +607,7 @@ export default function App() {
                               <span className="mx-1.5 text-gray-200">·</span>
                               {nights} night{nights !== 1 ? 's' : ''}
                               {destActivities.length > 0 && <><span className="ml-2 text-gray-200 mr-1.5">·</span>{destActivities.length} activit{destActivities.length !== 1 ? 'ies' : 'y'}</>}
-                              {dest.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${dest.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
+                              {dest.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${formatCurrency(dest.budget)}</span>}
                             </p>
                             <WeatherBadge city={dest.city} countryCode={dest.countryCode} departure={dest.departure} />
                           </div>
@@ -691,7 +692,7 @@ export default function App() {
                           <p className="text-xs text-gray-500 mt-0.5">
                             Check-in {format(new Date(hotel.checkIn), 'MMM d')} · Check-out {format(new Date(hotel.checkOut), 'MMM d, yyyy')}
                             <span className="mx-1.5 text-gray-200">·</span>{nights} night{nights !== 1 ? 's' : ''}
-                            {hotel.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${hotel.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
+                            {hotel.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${formatCurrency(hotel.budget)}</span>}
                           </p>
                         </div>
                         <div className="hidden sm:flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
@@ -728,7 +729,7 @@ export default function App() {
                             {cfg.label} · {format(new Date(t.departureDate), 'MMM d')}
                             {t.departureDate !== t.arrivalDate && ` – ${format(new Date(t.arrivalDate), 'MMM d, yyyy')}`}
                             {t.carrier && <span className="ml-1.5 text-gray-400">· {t.carrier}</span>}
-                            {t.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${t.budget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
+                            {t.budget != null && <span className="ml-2 font-medium" style={{ color: '#166534' }}><span className="text-gray-200 mr-1.5">·</span>${formatCurrency(t.budget)}</span>}
                           </p>
                         </div>
                         <div className="hidden sm:flex items-center gap-1" onClick={(e) => e.stopPropagation()}>

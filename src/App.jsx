@@ -507,7 +507,7 @@ export default function App() {
               onExport={() => setShowExport(true)}
               onSummaryPDF={() => openTripSummaryPrint({ name: activeTrip?.name, destinations, hotels, activities, transports })}
               onCopyShareLink={handleCopyShareLink}
-              onWhatsApp={() => shareToWhatsApp(destinations, collab.isCollaborating ? collab.tripCode : undefined)}
+              onWhatsApp={() => shareToWhatsApp(activeTrip)}
               onInstagram={() => exportTripCard(destinations, activeTrip?.name)}
               onShare={() => setShowCollab(true)}
               onTravelStats={() => setShowStats(true)}

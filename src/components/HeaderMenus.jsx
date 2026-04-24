@@ -156,9 +156,13 @@ export default function HeaderMenus({
         <button
           onClick={onTravelStats}
           title="Travel Stats"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors text-sm"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
-          📊
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <rect x="0" y="7" width="3" height="7" rx="1" fill="currentColor" />
+            <rect x="5.5" y="3" width="3" height="11" rx="1" fill="currentColor" />
+            <rect x="11" y="0" width="3" height="14" rx="1" fill="currentColor" />
+          </svg>
         </button>
       )}
     </div>

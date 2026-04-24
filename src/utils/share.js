@@ -22,23 +22,12 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-export function shareToWhatsApp(destinations, tripCode) {
-  if (!destinations.length) return
-  const lines = ['✈️ My Trip — Wayfar', '']
-  for (const dest of destinations) {
-    const nights = differenceInDays(new Date(dest.departure), new Date(dest.arrival))
-    const flag = flagEmoji(dest.countryCode)
-    const start = format(new Date(dest.arrival), 'MMM d')
-    const end = format(new Date(dest.departure), 'MMM d')
-    lines.push(
-      `${flag} ${dest.city}, ${dest.country} · ${start}–${end} (${nights} night${nights !== 1 ? 's' : ''})`
-    )
-  }
-  if (tripCode) {
-    lines.push('', `🔗 Join this trip — code: ${tripCode}`)
-  }
+export function shareToWhatsApp(trip) {
+  if (!trip?.destinations?.length) return
+  const url = serializeTripToUrl(trip)
+  const text = `✈️ Check out my trip on Wayfar:\n${url}`
   window.open(
-    `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`,
+    `https://wa.me/?text=${encodeURIComponent(text)}`,
     '_blank',
     'noopener,noreferrer'
   )

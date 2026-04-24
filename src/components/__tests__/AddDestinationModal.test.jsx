@@ -23,6 +23,30 @@ vi.mock('../CitySearch', () => ({
   Flag: ({ code }) => <span data-testid="flag">{code}</span>,
 }))
 
+// Stub DateRangePicker with two plain date inputs for easy test control
+vi.mock('../DateRangePicker', () => ({
+  default: ({ from, to, onChange }) => (
+    <div>
+      <input
+        type="date"
+        data-testid="date-from"
+        value={from ? from.toISOString().slice(0, 10) : ''}
+        onChange={(e) =>
+          onChange({ from: e.target.value ? new Date(e.target.value + 'T00:00:00') : null, to })
+        }
+      />
+      <input
+        type="date"
+        data-testid="date-to"
+        value={to ? to.toISOString().slice(0, 10) : ''}
+        onChange={(e) =>
+          onChange({ from, to: e.target.value ? new Date(e.target.value + 'T00:00:00') : null })
+        }
+      />
+    </div>
+  ),
+}))
+
 const defaultProps = {
   editing: null,
   destinations: [],
@@ -41,10 +65,9 @@ async function fillCity(user, value = 'Paris') {
   await user.type(input, value)
 }
 
-async function fillDates(user, arrival = '2025-08-01', departure = '2025-08-07') {
-  const [arrInput, depInput] = screen.getAllByDisplayValue('')
-  fireEvent.change(arrInput, { target: { value: arrival } })
-  fireEvent.change(depInput, { target: { value: departure } })
+function fillDates(arrival = '2025-08-01', departure = '2025-08-07') {
+  fireEvent.change(screen.getByTestId('date-from'), { target: { value: arrival } })
+  fireEvent.change(screen.getByTestId('date-to'), { target: { value: departure } })
 }
 
 describe('AddDestinationModal', () => {
@@ -94,8 +117,7 @@ describe('AddDestinationModal', () => {
   it('shows error when departure date is missing', async () => {
     renderModal()
     await fillCity(user)
-    const [arrInput] = screen.getAllByDisplayValue('')
-    fireEvent.change(arrInput, { target: { value: '2025-08-01' } })
+    fireEvent.change(screen.getByTestId('date-from'), { target: { value: '2025-08-01' } })
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(screen.getByText(/please set a departure date/i)).toBeInTheDocument()
@@ -105,9 +127,7 @@ describe('AddDestinationModal', () => {
   it('shows error when departure is before arrival', async () => {
     renderModal()
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-07' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-01' } })
+    fillDates('2025-08-07', '2025-08-01')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(screen.getByText(/departure cannot be before arrival/i)).toBeInTheDocument()
@@ -122,9 +142,7 @@ describe('AddDestinationModal', () => {
     }
     renderModal({ destinations: [existing] })
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-08' } })
+    fillDates('2025-08-01', '2025-08-08')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(screen.getByText(/overlap/i)).toBeInTheDocument()
@@ -139,10 +157,8 @@ describe('AddDestinationModal', () => {
     }
     renderModal({ destinations: [existing] })
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
     // New destination starts exactly when existing ends — should be allowed
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-05' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-10' } })
+    fillDates('2025-08-05', '2025-08-10')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(screen.queryByText(/overlap/i)).not.toBeInTheDocument()
@@ -153,9 +169,7 @@ describe('AddDestinationModal', () => {
   it('calls onAdd with correct data when form is valid', async () => {
     renderModal()
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-07' } })
+    fillDates('2025-08-01', '2025-08-07')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(defaultProps.onAdd).toHaveBeenCalledTimes(1)
@@ -177,9 +191,7 @@ describe('AddDestinationModal', () => {
     renderModal()
     await user.click(screen.getByText('Business'))
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-07' } })
+    fillDates('2025-08-01', '2025-08-07')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(defaultProps.onAdd).toHaveBeenCalledTimes(1)
@@ -210,9 +222,7 @@ describe('AddDestinationModal', () => {
   it('includes budget in payload when provided', async () => {
     renderModal()
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-07' } })
+    fillDates('2025-08-01', '2025-08-07')
     const budgetInput = document.querySelector('input[type="number"]')
     fireEvent.change(budgetInput, { target: { value: '500' } })
     fireEvent.submit(document.querySelector('form'))
@@ -225,9 +235,7 @@ describe('AddDestinationModal', () => {
   it('omits budget from payload when empty', async () => {
     renderModal()
     await fillCity(user)
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
-    fireEvent.change(dateInputs[1], { target: { value: '2025-08-07' } })
+    fillDates('2025-08-01', '2025-08-07')
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(defaultProps.onAdd).toHaveBeenCalledTimes(1)

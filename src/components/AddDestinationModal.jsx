@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { format, parseISO, startOfDay } from 'date-fns'
 import CitySearch from './CitySearch'
+import DateRangePicker from './DateRangePicker'
 
 export default function AddDestinationModal({ editing, destinations, onAdd, onUpdate, onClose, lastDeparture = '' }) {
   const [city, setCity] = useState(
@@ -8,12 +9,16 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       ? { city: editing.city, country: editing.country, countryCode: editing.countryCode }
       : null
   )
-  const [arrival, setArrival] = useState(
-    editing ? format(new Date(editing.arrival), 'yyyy-MM-dd') : (lastDeparture || '')
-  )
-  const [departure, setDeparture] = useState(
-    editing ? format(new Date(editing.departure), 'yyyy-MM-dd') : ''
-  )
+  const [dateRange, setDateRange] = useState(() => ({
+    from: editing
+      ? startOfDay(new Date(editing.arrival))
+      : lastDeparture
+      ? startOfDay(parseISO(lastDeparture))
+      : null,
+    to: editing ? startOfDay(new Date(editing.departure)) : null,
+  }))
+  const arrival = dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : ''
+  const departure = dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : ''
   const [type, setType] = useState(editing?.type || 'vacation')
   const [airline, setAirline] = useState(editing?.airline || '')
   const [flightNumber, setFlightNumber] = useState(editing?.flightNumber || '')
@@ -110,24 +115,13 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
           </div>
 
           {/* Dates */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Arrival</label>
-              <input
-                type="date"
-                value={arrival}
-                onChange={(e) => { setArrival(e.target.value); setError('') }}
-                className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Departure</label>
-              <input
-                type="date"
-                value={departure}
-
-                onChange={(e) => { setDeparture(e.target.value); setError('') }}
-                className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+          <div>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">Dates</label>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-xl px-3 pt-3 pb-2">
+              <DateRangePicker
+                from={dateRange.from}
+                to={dateRange.to}
+                onChange={(r) => { setDateRange(r); setError('') }}
               />
             </div>
           </div>

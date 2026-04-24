@@ -131,7 +131,7 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors pr-8"
+          className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 dark:focus:border-sky-500 transition-colors pr-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600"
         />
         {loading && (
           <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 border border-gray-300 border-t-gray-500 rounded-full animate-spin" />
@@ -139,20 +139,22 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded shadow-lg z-50 overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
           {results.map((r, i) => (
             <button
               key={i}
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => select(r)}
-              className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2.5 transition-colors ${
-                i === highlighted ? 'bg-gray-50' : 'hover:bg-gray-50'
-              } ${i < results.length - 1 ? 'border-b border-gray-50' : ''}`}
+              className={`w-full text-left px-3 py-2.5 text-sm flex items-center gap-2.5 transition-colors ${
+                i === highlighted
+                  ? 'bg-gray-50 dark:bg-gray-800'
+                  : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+              } ${i < results.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}`}
             >
               <Flag code={r.countryCode} country={r.country} />
-              <span className="font-medium text-gray-800">{r.city}</span>
-              <span className="text-gray-500 dark:text-gray-400 text-xs">{r.country}</span>
+              <span className="font-medium text-gray-800 dark:text-gray-200">{r.city}</span>
+              <span className="text-gray-400 dark:text-gray-500 text-xs">{r.country}</span>
             </button>
           ))}
         </div>

@@ -87,23 +87,23 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl w-full max-w-sm mx-4 p-6"
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl w-full max-w-sm mx-4 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
           <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {editing ? 'Edit destination' : 'Add destination'}
           </h2>
           <button
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded"
+            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded-full"
           >
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="overflow-y-auto px-6 pb-6 space-y-4">
           {/* City */}
           <div>
             <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">City</label>
@@ -138,7 +138,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   key={key}
                   type="button"
                   onClick={() => setType(key)}
-                  className={`flex-1 text-xs py-2 rounded border transition-colors ${
+                  className={`flex-1 text-xs py-2.5 rounded-xl border transition-colors ${
                     type === key
                       ? key === 'vacation'
                         ? 'bg-sky-50 border-sky-200 text-sky-700 font-medium'
@@ -166,7 +166,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                 step="0.01"
                 onChange={(e) => setBudget(e.target.value)}
                 placeholder="0.00"
-                className="w-full border border-gray-200 rounded pl-7 pr-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-xl pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors bg-white dark:bg-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                     value={airline}
                     onChange={(e) => setAirline(e.target.value)}
                     placeholder="e.g. Air France"
-                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors bg-white dark:bg-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <div>
@@ -196,7 +196,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                     value={flightNumber}
                     onChange={(e) => setFlightNumber(e.target.value)}
                     placeholder="e.g. AF123"
-                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors bg-white dark:bg-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                     type="time"
                     value={departureTime}
                     onChange={(e) => setDepartureTime(e.target.value)}
-                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors bg-white dark:bg-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                     type="time"
                     value={arrivalTime}
                     onChange={(e) => setArrivalTime(e.target.value)}
-                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors bg-white dark:bg-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -227,7 +227,7 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Anything else to remember…"
                   rows={2}
-                  className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-sky-400 transition-colors resize-none bg-white dark:bg-gray-900 dark:text-gray-100"
                 />
               </div>
             </div>
@@ -245,13 +245,13 @@ export default function AddDestinationModal({ editing, destinations, onAdd, onUp
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex-1 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-xl py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded py-2 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
+              className="flex-1 text-sm bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white rounded-xl py-2.5 hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors font-medium"
             >
               {editing ? 'Save changes' : 'Add destination'}
             </button>

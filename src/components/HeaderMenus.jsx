@@ -25,7 +25,7 @@ function DropdownMenu({ label, items, align = 'right', accent = false }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-colors text-sm font-medium ${
+        className={`w-8 h-8 flex items-center justify-center rounded-xl border transition-colors text-sm font-medium ${
           accent
             ? 'bg-sky-500 border-sky-500 text-white hover:bg-sky-600 hover:border-sky-600 dark:bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-500'
             : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -66,6 +66,7 @@ export default function HeaderMenus({
   onAddTransport,
   onAddHotel,
   onAddActivity,
+  onImportBooking,
   onExport,
   onSummaryPDF,
   onCopyShareLink,
@@ -98,6 +99,12 @@ export default function HeaderMenus({
       label: 'Activity',
       icon: <ActivityIcon type="attraction" size={13} color="#9ca3af" />,
       onClick: onAddActivity,
+    },
+    { divider: true },
+    {
+      label: 'Import booking',
+      icon: <span className="text-gray-400 text-sm leading-none">↓</span>,
+      onClick: onImportBooking,
     },
   ]
 

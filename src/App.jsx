@@ -32,6 +32,8 @@ import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
 import { useCloudSync } from './hooks/useCloudSync'
 import { STORAGE_KEY, DARK_MODE_KEY, GUEST_MODE_KEY, TRIP_LIMIT_GUEST, TRIP_LIMIT_AUTH } from './lib/constants'
+import IOSInstallPrompt from './components/IOSInstallPrompt'
+import BookingImportModal from './components/BookingImportModal'
 
 // ── Dark mode ──────────────────────────────────────────────────────────────
 function useDarkMode() {
@@ -103,6 +105,7 @@ export default function App() {
   const [showQuickStart, setShowQuickStart] = useState(false)
   const [showCollab, setShowCollab] = useState(false)
   const [showStats, setShowStats] = useState(false)
+  const [showBookingImport, setShowBookingImport] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [destSplit, setDestSplit] = useState(63)
   const [destsOpen, setDestsOpen] = useState(true)
@@ -504,6 +507,7 @@ export default function App() {
               onAddTransport={() => setModal({ type: 'transport', editing: null })}
               onAddHotel={() => setModal({ type: 'hotel', editing: null })}
               onAddActivity={() => setModal({ type: 'activity', editing: null, context: destinations[0] ?? null })}
+              onImportBooking={() => setShowBookingImport(true)}
               onExport={() => setShowExport(true)}
               onSummaryPDF={() => openTripSummaryPrint({ name: activeTrip?.name, destinations, hotels, activities, transports })}
               onCopyShareLink={handleCopyShareLink}
@@ -817,6 +821,24 @@ export default function App() {
           <button onClick={() => setUndoVisible(false)} className="opacity-50 hover:opacity-100 ml-1">✕</button>
         </div>
       )}
+
+      {showBookingImport && (
+        <BookingImportModal
+          onImport={(data) => {
+            setShowBookingImport(false)
+            if (data.type === 'hotel') {
+              setModal({ type: 'hotel', editing: null, prefill: data })
+            } else if (data.type === 'transport') {
+              setModal({ type: 'transport', editing: null, prefill: data })
+            } else {
+              setModal({ type: 'destination', editing: null, prefill: data })
+            }
+          }}
+          onClose={() => setShowBookingImport(false)}
+        />
+      )}
+
+      <IOSInstallPrompt />
 
       {showWelcome && (
         <WelcomeScreen

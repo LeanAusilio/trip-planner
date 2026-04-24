@@ -1,3 +1,6 @@
+import { startOfDay, format } from 'date-fns'
+import DateRangePicker from '../DateRangePicker'
+
 const inputCls = 'w-full bg-[#2E2E33] border border-[#3A3A40] rounded-xl px-3 py-2.5 text-sm text-[#F5F5F5] focus:outline-none focus:border-[#5A5A60] transition-colors'
 
 function YesNo({ value, onChange }) {
@@ -39,7 +42,7 @@ export default function StepAccommodation({ hasAccommodation, accommodations, on
       <YesNo value={hasAccommodation} onChange={onHasAccommodationChange} />
 
       {hasAccommodation && (
-        <div className="flex flex-col gap-3 max-h-56 overflow-y-auto pr-1">
+        <div className="flex flex-col gap-3 max-h-[28rem] overflow-y-auto pr-1">
           {accommodations.map((hotel, i) => (
             <div key={i} className="bg-[#242428] rounded-xl p-4 flex flex-col gap-3">
               <input
@@ -49,14 +52,16 @@ export default function StepAccommodation({ hasAccommodation, accommodations, on
                 data-testid="hotel-name-input"
                 className={inputCls}
               />
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs text-[#7A7A80] mb-1">Check-in</label>
-                  <input type="date" value={hotel.checkIn} onChange={(e) => update(i, { checkIn: e.target.value })} className={inputCls} style={{ colorScheme: 'dark' }} />
-                </div>
-                <div>
-                  <label className="block text-xs text-[#7A7A80] mb-1">Check-out</label>
-                  <input type="date" value={hotel.checkOut} min={hotel.checkIn || undefined} onChange={(e) => update(i, { checkOut: e.target.value })} className={inputCls} style={{ colorScheme: 'dark' }} />
+              <div className="dark">
+                <div className="border border-[#3A3A40] rounded-xl px-3 pt-3 pb-2">
+                  <DateRangePicker
+                    from={hotel.checkIn ? startOfDay(new Date(hotel.checkIn + 'T00:00:00')) : null}
+                    to={hotel.checkOut ? startOfDay(new Date(hotel.checkOut + 'T00:00:00')) : null}
+                    onChange={(r) => update(i, {
+                      checkIn: r.from ? format(r.from, 'yyyy-MM-dd') : '',
+                      checkOut: r.to ? format(r.to, 'yyyy-MM-dd') : '',
+                    })}
+                  />
                 </div>
               </div>
               <input value={hotel.address} onChange={(e) => update(i, { address: e.target.value })} placeholder="Address (optional)" className={inputCls} />

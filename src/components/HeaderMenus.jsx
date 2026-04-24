@@ -25,7 +25,7 @@ function DropdownMenu({ label, items, align = 'right', accent = false }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`w-8 h-8 flex items-center justify-center rounded-xl border transition-colors text-sm font-medium ${
+        className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors text-sm font-medium ${
           accent
             ? 'bg-sky-500 border-sky-500 text-white hover:bg-sky-600 hover:border-sky-600 dark:bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-500'
             : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -163,12 +163,12 @@ export default function HeaderMenus({
         <button
           onClick={onTravelStats}
           title="Travel Stats"
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-white hover:from-blue-400 hover:to-violet-500 active:scale-95 transition-all shadow-sm"
+          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
-          <svg width="15" height="15" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <rect x="0" y="7" width="3" height="7" rx="1" fill="white" />
-            <rect x="5.5" y="3" width="3" height="11" rx="1" fill="white" />
-            <rect x="11" y="0" width="3" height="14" rx="1" fill="white" />
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <rect x="0" y="7" width="3" height="7" rx="1" fill="currentColor" />
+            <rect x="5.5" y="3" width="3" height="11" rx="1" fill="currentColor" />
+            <rect x="11" y="0" width="3" height="14" rx="1" fill="currentColor" />
           </svg>
         </button>
       )}

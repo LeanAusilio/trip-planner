@@ -1,8 +1,8 @@
+import { startOfDay, format } from 'date-fns'
 import CitySearch from '../CitySearch'
+import DateRangePicker from '../DateRangePicker'
 
 const emptyDest = () => ({ city: '', country: '', countryCode: '', arrival: '', departure: '' })
-
-const inputCls = 'w-full bg-[#2E2E33] border border-[#3A3A40] rounded-xl px-3 py-2.5 text-sm text-[#F5F5F5] focus:outline-none focus:border-[#5A5A60] transition-colors'
 
 export default function StepDestinations({ destinations, onChange }) {
   const update = (i, patch) =>
@@ -17,7 +17,7 @@ export default function StepDestinations({ destinations, onChange }) {
         <p className="text-sm text-[#7A7A80]">Add all your stops — you can edit dates later.</p>
       </div>
 
-      <div className="flex flex-col gap-4 max-h-72 overflow-y-auto pr-1">
+      <div className="flex flex-col gap-4 max-h-[28rem] overflow-y-auto pr-1">
         {destinations.map((dest, i) => (
           <div key={i} className="bg-[#242428] rounded-xl p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
@@ -36,26 +36,15 @@ export default function StepDestinations({ destinations, onChange }) {
             <div className="qs-city-search">
               <CitySearch value={dest} onChange={(c) => update(i, c)} placeholder="Search city…" />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-xs text-[#7A7A80] mb-1">Arrival</label>
-                <input
-                  type="date"
-                  value={dest.arrival}
-                  onChange={(e) => update(i, { arrival: e.target.value })}
-                  className={inputCls}
-                  style={{ colorScheme: 'dark' }}
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-[#7A7A80] mb-1">Departure</label>
-                <input
-                  type="date"
-                  value={dest.departure}
-                  min={dest.arrival || undefined}
-                  onChange={(e) => update(i, { departure: e.target.value })}
-                  className={inputCls}
-                  style={{ colorScheme: 'dark' }}
+            <div className="dark">
+              <div className="border border-[#3A3A40] rounded-xl px-3 pt-3 pb-2">
+                <DateRangePicker
+                  from={dest.arrival ? startOfDay(new Date(dest.arrival + 'T00:00:00')) : null}
+                  to={dest.departure ? startOfDay(new Date(dest.departure + 'T00:00:00')) : null}
+                  onChange={(r) => update(i, {
+                    arrival: r.from ? format(r.from, 'yyyy-MM-dd') : '',
+                    departure: r.to ? format(r.to, 'yyyy-MM-dd') : '',
+                  })}
                 />
               </div>
             </div>

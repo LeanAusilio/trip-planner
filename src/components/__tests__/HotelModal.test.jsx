@@ -3,6 +3,29 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import HotelModal from '../HotelModal'
 
+vi.mock('../DateRangePicker', () => ({
+  default: ({ from, to, onChange }) => (
+    <div>
+      <input
+        type="date"
+        data-testid="date-from"
+        value={from ? from.toISOString().slice(0, 10) : ''}
+        onChange={(e) =>
+          onChange({ from: e.target.value ? new Date(e.target.value + 'T00:00:00') : null, to })
+        }
+      />
+      <input
+        type="date"
+        data-testid="date-to"
+        value={to ? to.toISOString().slice(0, 10) : ''}
+        onChange={(e) =>
+          onChange({ from, to: e.target.value ? new Date(e.target.value + 'T00:00:00') : null })
+        }
+      />
+    </div>
+  ),
+}))
+
 const defaultProps = {
   editing: null,
   hotels: [],
@@ -18,9 +41,8 @@ async function fillForm(user, name = 'Grand Hotel', checkIn = '2025-08-01', chec
   const nameInput = screen.getByPlaceholderText('e.g. Hotel Ritz')
   await user.clear(nameInput)
   await user.type(nameInput, name)
-  const dateInputs = document.querySelectorAll('input[type="date"]')
-  fireEvent.change(dateInputs[0], { target: { value: checkIn } })
-  fireEvent.change(dateInputs[1], { target: { value: checkOut } })
+  fireEvent.change(screen.getByTestId('date-from'), { target: { value: checkIn } })
+  fireEvent.change(screen.getByTestId('date-to'), { target: { value: checkOut } })
 }
 
 describe('HotelModal', () => {
@@ -66,8 +88,7 @@ describe('HotelModal', () => {
     renderModal()
     const nameInput = screen.getByPlaceholderText('e.g. Hotel Ritz')
     await user.type(nameInput, 'Grand')
-    const dateInputs = document.querySelectorAll('input[type="date"]')
-    fireEvent.change(dateInputs[0], { target: { value: '2025-08-01' } })
+    fireEvent.change(screen.getByTestId('date-from'), { target: { value: '2025-08-01' } })
     fireEvent.submit(document.querySelector('form'))
     await waitFor(() => {
       expect(screen.getByText(/please set a check-out date/i)).toBeInTheDocument()

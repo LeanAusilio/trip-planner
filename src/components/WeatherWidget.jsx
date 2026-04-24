@@ -1,16 +1,6 @@
 import { useState, useEffect } from 'react'
 import { startOfDay, addDays, differenceInDays } from 'date-fns'
-
-// WMO weather codes → emoji + label
-function weatherInfo(code) {
-  if (code === 0)               return { icon: '☀️', label: 'Clear' }
-  if (code <= 3)                return { icon: '⛅', label: 'Cloudy' }
-  if (code <= 48)               return { icon: '🌫️', label: 'Fog' }
-  if (code <= 67)               return { icon: '🌧️', label: 'Rain' }
-  if (code <= 77)               return { icon: '❄️', label: 'Snow' }
-  if (code <= 82)               return { icon: '🌦️', label: 'Showers' }
-  return { icon: '⛈️', label: 'Storm' }
-}
+import { wmoEmoji } from '../hooks/useCurrentWeather'
 
 function WeatherCard({ dest }) {
   const [data, setData] = useState(null)
@@ -57,19 +47,16 @@ function WeatherCard({ dest }) {
         <span className="text-xs text-gray-500 dark:text-gray-400">~{avgMax}°C</span>
       </div>
       <div className="flex gap-2">
-        {days.map((day, i) => {
-          const info = weatherInfo(day.code)
-          return (
-            <div key={i} className="flex flex-col items-center gap-0.5 min-w-[36px]">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {day.date.toLocaleDateString('en', { weekday: 'short' }).slice(0, 2)}
-              </span>
-              <span className="text-lg leading-tight" title={info.label}>{info.icon}</span>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{day.max}°</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">{day.min}°</span>
-            </div>
-          )
-        })}
+        {days.map((day, i) => (
+          <div key={i} className="flex flex-col items-center gap-0.5 min-w-[36px]">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {day.date.toLocaleDateString('en', { weekday: 'short' }).slice(0, 2)}
+            </span>
+            <span className="text-lg leading-tight">{wmoEmoji(day.code)}</span>
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{day.max}°</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{day.min}°</span>
+          </div>
+        ))}
       </div>
     </div>
   )

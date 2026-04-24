@@ -23,6 +23,7 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [highlighted, setHighlighted] = useState(-1)
+  const [networkError, setNetworkError] = useState(false)
   const debounceRef = useRef(null)
   const containerRef = useRef(null)
   const inputRef = useRef(null)
@@ -43,10 +44,12 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
     if (q.length < 2) {
       setResults([])
       setOpen(false)
+      setNetworkError(false)
       return
     }
     debounceRef.current = setTimeout(async () => {
       setLoading(true)
+      setNetworkError(false)
       try {
         const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=10&featuretype=city&accept-language=en`
         const res = await fetch(url, {
@@ -84,7 +87,7 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
         setHighlighted(-1)
         setOpen(cities.length > 0)
       } catch {
-        // silently fail — user can try again
+        setNetworkError(true)
       } finally {
         setLoading(false)
       }
@@ -137,6 +140,9 @@ export default function CitySearch({ value, onChange, placeholder = 'Search city
           <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 border border-gray-300 border-t-gray-500 rounded-full animate-spin" />
         )}
       </div>
+      {networkError && !loading && (
+        <p className="text-xs text-red-400 mt-1">Connection error — check your network and try again</p>
+      )}
 
       {open && results.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">

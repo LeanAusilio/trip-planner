@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Icon Options — Wayfar</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #e2e8f0; display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 32px; }
+    h1 { color: #0f172a; margin: 0; }
+    .row { display: flex; gap: 40px; align-items: flex-start; }
+    .option { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .option label { font-size: 14px; font-weight: 600; color: #334155; }
+    .option p { font-size: 12px; color: #64748b; text-align: center; max-width: 160px; margin: 0; line-height: 1.5; }
+    /* Simulate home screen sizes */
+    .sizes { display: flex; gap: 16px; align-items: flex-end; }
+    img.lg { width: 120px; height: 120px; border-radius: 26px; }
+    img.md { width: 76px; height: 76px; border-radius: 17px; }
+    img.sm { width: 44px; height: 44px; border-radius: 10px; }
+    .size-label { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Wayfar Icon Options</h1>
+  <p style="color:#475569;margin:0">Each shown at 120px, 76px (iOS home screen), and 44px (notification)</p>
+
+  <div class="row">
+    <div class="option">
+      <label>A — Sky Blue, Bold W</label>
+      <div class="sizes">
+        <div><img class="lg" src="icon-option-a.svg"><div class="size-label">120px</div></div>
+        <div><img class="md" src="icon-option-a.svg"><div class="size-label">76px</div></div>
+        <div><img class="sm" src="icon-option-a.svg"><div class="size-label">44px</div></div>
+      </div>
+      <p>White W on sky-blue. Arrowheads at both lower tips. Dots at all 4 corners. Classic, bold.</p>
+    </div>
+
+    <div class="option">
+      <label>B — Dark Navy, Route Lines</label>
+      <div class="sizes">
+        <div><img class="lg" src="icon-option-b.svg"><div class="size-label">120px</div></div>
+        <div><img class="md" src="icon-option-b.svg"><div class="size-label">76px</div></div>
+        <div><img class="sm" src="icon-option-b.svg"><div class="size-label">44px</div></div>
+      </div>
+      <p>Sky-blue route line on dark navy. 5 waypoint dots. Looks like a GPS track.</p>
+    </div>
+
+    <div class="option">
+      <label>C — White Background, Sky W</label>
+      <div class="sizes">
+        <div><img class="lg" src="icon-option-c.svg"><div class="size-label">120px</div></div>
+        <div><img class="md" src="icon-option-c.svg"><div class="size-label">76px</div></div>
+        <div><img class="sm" src="icon-option-c.svg"><div class="size-label">44px</div></div>
+      </div>
+      <p>Sky-blue W on white/off-white. Strongest contrast. Most legible at small sizes.</p>
+    </div>
+  </div>
+</body>
+</html>

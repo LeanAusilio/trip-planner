@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: deep navy -->
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+
+  <!-- Thin route-line W with glowing sky-blue -->
+  <path d="M 108 148 Q 132 270 176 322 Q 216 200 256 152 Q 296 200 336 322 Q 380 270 404 148"
+        stroke="#0ea5e9" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Arrowhead at BL tip -->
+  <polygon points="176,322 152,374 204,360" fill="#0ea5e9"/>
+  <!-- Arrowhead at BR tip -->
+  <polygon points="336,322 360,374 308,360" fill="#0ea5e9"/>
+
+  <!-- Waypoint dots — all 5 key points of the W -->
+  <circle cx="108" cy="148" r="20" fill="#0ea5e9"/>
+  <circle cx="404" cy="148" r="20" fill="#0ea5e9"/>
+  <circle cx="256" cy="152" r="14" fill="#0ea5e9" opacity="0.6"/>
+  <!-- BL and BR dots (at arrow tips) -->
+  <circle cx="176" cy="322" r="14" fill="#0ea5e9"/>
+  <circle cx="336" cy="322" r="14" fill="#0ea5e9"/>
+</svg>

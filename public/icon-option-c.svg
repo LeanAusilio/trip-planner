@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: white with very subtle shadow feel -->
+  <rect width="512" height="512" rx="112" fill="#f8fafc"/>
+
+  <!-- Bold W in sky-blue, slightly tighter curve, strong arrowheads -->
+  <path d="M 108 144 Q 136 272 178 328 Q 218 202 256 150 Q 294 202 334 328 Q 376 272 404 144"
+        stroke="#0ea5e9" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Sharp arrowheads at both lower tips -->
+  <polygon points="178,328 144,386 212,372" fill="#0ea5e9"/>
+  <polygon points="334,328 368,386 300,372" fill="#0ea5e9"/>
+
+  <!-- Small accent dots at upper-left and upper-right corners — sky-blue filled -->
+  <circle cx="108" cy="144" r="24" fill="#0ea5e9"/>
+  <circle cx="404" cy="144" r="24" fill="#0ea5e9"/>
+
+  <!-- Centre valley: smaller contrasting dot -->
+  <circle cx="256" cy="150" r="14" fill="#0369a1"/>
+</svg>

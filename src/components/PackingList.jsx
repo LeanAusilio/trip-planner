@@ -45,24 +45,27 @@ export default function PackingList({ items, onAdd, onToggle, onDelete, onClearC
                 >
                   <button
                     onClick={() => onToggle(item.id)}
-                    className={`w-4 h-4 rounded flex-shrink-0 border transition-colors flex items-center justify-center ${
+                    aria-label={item.checked ? 'Uncheck item' : 'Check item'}
+                    className="w-11 h-11 -mx-3.5 flex-shrink-0 flex items-center justify-center"
+                  >
+                    <span className={`w-4 h-4 rounded border transition-colors flex items-center justify-center ${
                       item.checked
                         ? 'bg-gray-400 border-gray-400 dark:bg-gray-500 dark:border-gray-500'
                         : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                    }`}
-                  >
-                    {item.checked && (
-                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
+                    }`}>
+                      {item.checked && (
+                        <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+                          <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </span>
                   </button>
                   <span className={`flex-1 text-sm transition-colors ${item.checked ? 'line-through text-gray-300 dark:text-gray-600' : 'text-gray-700 dark:text-gray-300'}`}>
                     {item.text}
                   </span>
                   <button
                     onClick={() => onDelete(item.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 hover:text-red-400 dark:text-gray-600 dark:hover:text-red-400 text-xs w-5 h-5 flex items-center justify-center"
+                    className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-gray-300 hover:text-red-400 dark:text-gray-600 dark:hover:text-red-400 text-xs w-11 h-11 flex items-center justify-center -mr-3"
                   >✕</button>
                 </li>
               ))}

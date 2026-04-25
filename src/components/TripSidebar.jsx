@@ -132,7 +132,7 @@ export default function TripSidebar({ trips, activeTripId, open, onClose, onSele
           <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">My Trips</span>
           <button
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
+            className="w-11 h-11 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors -mr-2.5"
           >✕</button>
         </div>
 

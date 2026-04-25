@@ -28,7 +28,7 @@ export default function BookingImportModal({ onImport, onClose }) {
   return (
     <div
       className="fixed inset-0 z-40 flex items-end sm:items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.06)' }}
+      style={{ background: 'rgba(0,0,0,0.40)' }}
       onClick={onClose}
     >
       <div
@@ -42,7 +42,7 @@ export default function BookingImportModal({ onImport, onClose }) {
               Paste any confirmation email or booking text
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-300 hover:text-gray-500 transition-colors w-6 h-6 flex items-center justify-center">
+          <button onClick={onClose} className="text-gray-300 hover:text-gray-500 transition-colors w-11 h-11 flex items-center justify-center -mr-2.5 -mt-1">
             ✕
           </button>
         </div>
@@ -58,7 +58,7 @@ export default function BookingImportModal({ onImport, onClose }) {
 
         {error && <p className="text-xs text-red-400 mt-2">⚠ {error}</p>}
 
-        <p className="text-[10px] text-gray-300 dark:text-gray-700 mt-2">
+        <p className="text-xs text-gray-300 dark:text-gray-700 mt-2">
           Text is sent to AI for parsing and not stored.
         </p>
 

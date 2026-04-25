@@ -337,7 +337,7 @@ export default function DetailCard({ item, onClose, onEdit }) {
       <div
         data-testid="detail-card-backdrop"
         className="fixed inset-0 z-40"
-        style={{ background: 'rgba(0,0,0,0.04)' }}
+        style={{ background: 'rgba(0,0,0,0.40)' }}
         onClick={onClose}
       />
 
@@ -361,7 +361,7 @@ export default function DetailCard({ item, onClose, onEdit }) {
           <button
             data-testid="detail-card-close"
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded"
+            className="w-11 h-11 flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors rounded -mr-2.5"
           >
             ✕
           </button>

@@ -28,10 +28,13 @@
     fill="none"
   />
 
-  <!-- Destination dots at corners 2, 3, 4 -->
-  <circle cx="182" cy="348" r="16" fill="#0ea5e9"/>
-  <circle cx="256" cy="148" r="16" fill="#0ea5e9"/>
-  <circle cx="330" cy="348" r="16" fill="#0ea5e9"/>
+  <!-- Destination dots at corners 2, 3, 4 — outer ring + navy centre for contrast -->
+  <circle cx="182" cy="348" r="20" fill="#0ea5e9"/>
+  <circle cx="182" cy="348" r="8"  fill="#0f172a"/>
+  <circle cx="256" cy="148" r="20" fill="#0ea5e9"/>
+  <circle cx="256" cy="148" r="8"  fill="#0f172a"/>
+  <circle cx="330" cy="348" r="20" fill="#0ea5e9"/>
+  <circle cx="330" cy="348" r="8"  fill="#0f172a"/>
 
   <!--
     Two-line arrowhead at corner 5 (416, 148).

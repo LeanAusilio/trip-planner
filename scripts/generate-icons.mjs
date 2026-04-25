@@ -5,7 +5,7 @@ import { mkdirSync } from 'fs'
 mkdirSync('public', { recursive: true })
 mkdirSync('scripts', { recursive: true })
 
-const svg = readFileSync('public/wayfar-logo-light.svg')
+const svg = readFileSync('public/icon-option-d.svg')
 
 await sharp(svg).resize(192, 192).png().toFile('public/icon-192.png')
 console.log('✓ icon-192.png')

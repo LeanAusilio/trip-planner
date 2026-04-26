@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, Pressable, useColorScheme, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, Pressable, useColorScheme, ActivityIndicator, Modal, Alert } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useTrips } from '../../src/hooks/useTrips'
@@ -14,17 +14,25 @@ type SelectedItem =
   | { kind: 'transport'; data: Transport }
   | null
 
+const ADD_OPTIONS = [
+  { label: '📍 Destination', route: '/destination-modal' as const },
+  { label: '🏨 Hotel', route: '/hotel-modal' as const },
+  { label: '🎯 Activity', route: '/activity-modal' as const },
+  { label: '✈️ Transport', route: '/transport-modal' as const },
+] as const
+
 export default function TripScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const colorScheme = useColorScheme()
 
   const {
     trips, activeTripId, setActiveTripId, activeTrip, loaded,
     loadDemoData,
+    deleteDestination, deleteHotel, deleteActivity, deleteTransport,
   } = useTrips()
 
   const [selectedItem, setSelectedItem] = useState<SelectedItem>(null)
+  const [showAddMenu, setShowAddMenu] = useState(false)
 
   const destinations = activeTrip?.destinations || []
   const hotels = activeTrip?.hotels || []
@@ -36,6 +44,50 @@ export default function TripScreen() {
       <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-950">
         <ActivityIndicator size="large" color="#0ea5e9" />
       </View>
+    )
+  }
+
+  const handleEdit = () => {
+    const item = selectedItem
+    setSelectedItem(null)
+    if (!item) return
+    if (item.kind === 'destination') {
+      router.push({ pathname: '/destination-modal', params: { editing: JSON.stringify(item.data) } })
+    } else if (item.kind === 'hotel') {
+      router.push({ pathname: '/hotel-modal', params: { editing: JSON.stringify(item.data) } })
+    } else if (item.kind === 'activity') {
+      router.push({ pathname: '/activity-modal', params: { editing: JSON.stringify(item.data) } })
+    } else if (item.kind === 'transport') {
+      router.push({ pathname: '/transport-modal', params: { editing: JSON.stringify(item.data) } })
+    }
+  }
+
+  const handleDelete = () => {
+    const item = selectedItem
+    if (!item) return
+    const label =
+      item.kind === 'destination' ? item.data.city :
+      item.kind === 'hotel' ? item.data.name :
+      item.kind === 'activity' ? item.data.name :
+      `${item.data.fromCity} → ${item.data.toCity}`
+
+    Alert.alert(
+      'Delete',
+      `Remove "${label}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setSelectedItem(null)
+            if (item.kind === 'destination') deleteDestination(item.data.id)
+            else if (item.kind === 'hotel') deleteHotel(item.data.id)
+            else if (item.kind === 'activity') deleteActivity(item.data.id)
+            else if (item.kind === 'transport') deleteTransport(item.data.id)
+          },
+        },
+      ]
     )
   }
 
@@ -53,7 +105,7 @@ export default function TripScreen() {
             {activeTrip?.name || 'My Trip'}
           </Text>
           <Pressable
-            onPress={() => router.push('/destination-modal')}
+            onPress={() => setShowAddMenu(true)}
             className="w-9 h-9 bg-sky-500 rounded-full items-center justify-center"
           >
             <Text className="text-white text-2xl font-light" style={{ lineHeight: 28 }}>+</Text>
@@ -133,16 +185,61 @@ export default function TripScreen() {
         </ScrollView>
       )}
 
+      {/* ── Detail Card ── */}
       <DetailCard
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
-        onEdit={() => {
-          setSelectedItem(null)
-          if (selectedItem?.kind === 'destination') {
-            router.push({ pathname: '/destination-modal', params: { editing: JSON.stringify(selectedItem.data) } })
-          }
-        }}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
+
+      {/* ── Add Menu ── */}
+      <Modal
+        visible={showAddMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowAddMenu(false)}
+      >
+        <Pressable
+          className="flex-1 bg-black/40 justify-end"
+          onPress={() => setShowAddMenu(false)}
+        >
+          <Pressable
+            className="bg-white dark:bg-gray-900 rounded-t-3xl px-4 pt-4"
+            style={{ paddingBottom: insets.bottom + 16 }}
+            onPress={() => {}}
+          >
+            {/* Handle */}
+            <View className="items-center mb-4">
+              <View className="w-8 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
+            </View>
+
+            <Text className="text-base font-semibold text-gray-900 dark:text-white mb-4 px-2">
+              What would you like to add?
+            </Text>
+
+            {ADD_OPTIONS.map((opt) => (
+              <Pressable
+                key={opt.route}
+                onPress={() => {
+                  setShowAddMenu(false)
+                  router.push(opt.route)
+                }}
+                className="flex-row items-center py-4 px-2 border-b border-gray-50 dark:border-gray-800 active:bg-gray-50 dark:active:bg-gray-800 rounded-xl"
+              >
+                <Text className="text-base text-gray-900 dark:text-white">{opt.label}</Text>
+              </Pressable>
+            ))}
+
+            <Pressable
+              onPress={() => setShowAddMenu(false)}
+              className="mt-3 py-3 items-center"
+            >
+              <Text className="text-sky-500 font-medium">Cancel</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   )
 }

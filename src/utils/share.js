@@ -1,5 +1,5 @@
 import { format, differenceInDays } from 'date-fns'
-import { APP_URL } from '../lib/constants'
+import { supabase } from '../lib/supabase'
 
 function flagEmoji(countryCode) {
   if (!countryCode || countryCode.length !== 2) return '📍'
@@ -22,15 +22,66 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-export function shareToWhatsApp(trip) {
+function buildTripText(trip, url) {
+  const dests = trip.destinations.slice(0, 6).map(d => {
+    const flag = flagEmoji(d.countryCode)
+    const arr = format(new Date(d.arrival), 'MMM d')
+    const dep = format(new Date(d.departure), 'MMM d')
+    const nights = differenceInDays(new Date(d.departure), new Date(d.arrival))
+    return `${flag} ${d.city} · ${arr}–${dep} (${nights} night${nights !== 1 ? 's' : ''})`
+  })
+  const extra = trip.destinations.length > 6
+    ? `\n+${trip.destinations.length - 6} more destinations`
+    : ''
+  return `✈️ ${trip.name || 'My trip'} on Wayfar\n\n${dests.join('\n')}${extra}\n\n🔗 ${url}`
+}
+
+async function saveSharedTrip(trip) {
+  if (!supabase) return null
+  try {
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase()
+    const payload = {
+      name: trip.name,
+      destinations: trip.destinations,
+      hotels: trip.hotels ?? [],
+      activities: trip.activities ?? [],
+      transports: trip.transports ?? [],
+      currency: trip.currency,
+    }
+    const { error } = await supabase.from('shared_trips').insert({ code, data: payload })
+    if (error) return null
+    return code
+  } catch {
+    return null
+  }
+}
+
+export async function loadSharedTrip(code) {
+  if (!code || !supabase) return null
+  try {
+    const { data, error } = await supabase
+      .from('shared_trips')
+      .select('data')
+      .eq('code', code)
+      .single()
+    if (error || !data) return null
+    return data.data
+  } catch {
+    return null
+  }
+}
+
+export function getSharedTripCode() {
+  return new URLSearchParams(window.location.search).get('trip') || null
+}
+
+export async function shareToWhatsApp(trip) {
   if (!trip?.destinations?.length) return
-  const url = serializeTripToUrl(trip)
-  const text = `✈️ Check out my trip on Wayfar:\n${url}`
-  window.open(
-    `https://wa.me/?text=${encodeURIComponent(text)}`,
-    '_blank',
-    'noopener,noreferrer'
-  )
+  const code = await saveSharedTrip(trip)
+  const base = `${window.location.origin}${window.location.pathname}`
+  const url = code ? `${base}?trip=${code}` : base
+  const text = buildTripText(trip, url)
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
 }
 
 export function exportTripCard(destinations, tripName) {
@@ -175,7 +226,9 @@ export function deserializeTripFromUrl() {
 }
 
 export async function copyTripShareLink(trip) {
-  const url = serializeTripToUrl(trip)
+  const code = await saveSharedTrip(trip)
+  const base = `${window.location.origin}${window.location.pathname}`
+  const url = code ? `${base}?trip=${code}` : serializeTripToUrl(trip)
   await navigator.clipboard.writeText(url)
   return url
 }

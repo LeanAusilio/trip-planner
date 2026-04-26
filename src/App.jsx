@@ -7,6 +7,7 @@ import InlineDestinationCreator from './components/InlineDestinationCreator'
 import CollaborationModal from './components/CollaborationModal'
 import { useCollaboration } from './hooks/useCollaboration'
 import Timeline from './components/Timeline'
+import ItineraryList from './components/ItineraryList'
 import AddDestinationModal from './components/AddDestinationModal'
 import ActivityModal from './components/ActivityModal'
 import HotelModal from './components/HotelModal'
@@ -28,7 +29,7 @@ import MobileBottomBar from './components/MobileBottomBar'
 import TravelStats from './components/TravelStats'
 import AuthButton from './components/AuthButton'
 import WelcomeScreen from './components/WelcomeScreen'
-import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl } from './utils/share'
+import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl, loadSharedTrip, getSharedTripCode } from './utils/share'
 import { openTripSummaryPrint } from './utils/export'
 import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
@@ -122,6 +123,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips, activeTripId }))
   }, [trips, activeTripId])
+
+  useEffect(() => {
+    const code = getSharedTripCode()
+    if (!code) return
+    loadSharedTrip(code).then(trip => {
+      if (trip) setSharedTrip(trip)
+    })
+  }, [])
 
   const { deleteFromCloud } = useCloudSync({ userId: user?.id, trips, setTrips, setActiveTripId })
 
@@ -560,33 +569,45 @@ export default function App() {
               ))}
             </div>
 
-            {/* Timeline */}
+            {/* Timeline / Mobile itinerary */}
             <section id="sec-timeline" className="mb-12 -mx-4 sm:mx-0 px-4 sm:px-0">
-              <Timeline
+              <ItineraryList
                 destinations={destinations}
                 activities={activities}
                 hotels={hotels}
                 transports={transports}
-                dark={dark}
-                onUpdateDest={updateDestination}
-                onEditDest={(dest) => setModal({ type: 'destination', editing: dest })}
-                onDeleteDest={deleteDestination}
-                onEditActivity={(act) => {
-                  const dest = destinations.find((d) => d.id === act.destinationId)
-                  setModal({ type: 'activity', editing: act, context: dest })
-                }}
-                onDeleteActivity={deleteActivity}
-                onEditHotel={(hotel) => setModal({ type: 'hotel', editing: hotel })}
-                onDeleteHotel={deleteHotel}
                 onClickDest={openDestCard}
                 onClickHotel={openHotelCard}
                 onClickActivity={openActivityCard}
                 onClickTransport={openTransportCard}
-                onEditTransport={(t) => setModal({ type: 'transport', editing: t })}
-                onDeleteTransport={deleteTransport}
-                onDragStart={snapshotForUndo}
-                onDragComplete={showUndoToast}
               />
+              <div className="hidden sm:block">
+                <Timeline
+                  destinations={destinations}
+                  activities={activities}
+                  hotels={hotels}
+                  transports={transports}
+                  dark={dark}
+                  onUpdateDest={updateDestination}
+                  onEditDest={(dest) => setModal({ type: 'destination', editing: dest })}
+                  onDeleteDest={deleteDestination}
+                  onEditActivity={(act) => {
+                    const dest = destinations.find((d) => d.id === act.destinationId)
+                    setModal({ type: 'activity', editing: act, context: dest })
+                  }}
+                  onDeleteActivity={deleteActivity}
+                  onEditHotel={(hotel) => setModal({ type: 'hotel', editing: hotel })}
+                  onDeleteHotel={deleteHotel}
+                  onClickDest={openDestCard}
+                  onClickHotel={openHotelCard}
+                  onClickActivity={openActivityCard}
+                  onClickTransport={openTransportCard}
+                  onEditTransport={(t) => setModal({ type: 'transport', editing: t })}
+                  onDeleteTransport={deleteTransport}
+                  onDragStart={snapshotForUndo}
+                  onDragComplete={showUndoToast}
+                />
+              </div>
             </section>
 
             {/* Weather widget */}

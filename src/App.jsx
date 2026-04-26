@@ -470,6 +470,13 @@ export default function App() {
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
+            {/* Auth button — mobile only (desktop version is in the right section) */}
+            <div className="sm:hidden flex-shrink-0">
+              <AuthButton user={user} onShowWelcome={() => {
+                localStorage.removeItem(GUEST_MODE_KEY)
+                setGuestMode(false)
+              }} />
+            </div>
             <h1 className="text-base font-medium text-gray-900 dark:text-gray-100 flex-shrink-0">Wayfar</h1>
             {/* Active trip name */}
             {activeTrip && (

@@ -6,6 +6,7 @@ import {
   Pressable,
   Modal,
   Image,
+  useColorScheme,
 } from 'react-native'
 import { format, differenceInDays, startOfDay } from 'date-fns'
 import { formatCurrency } from '../utils/formatUtils'
@@ -42,19 +43,19 @@ function Flag({ code, country }: { code?: string; country?: string }) {
 }
 
 function Row({ label, value }: { label: string; value?: string | null }) {
+  const dark = useColorScheme() === 'dark'
   if (!value) return null
   return (
     <View style={{ marginBottom: 10 }}>
       {label ? (
         <Text style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>{label}</Text>
       ) : null}
-      <Text style={{ fontSize: 14, color: '#1f2937' }}>{value}</Text>
+      <Text style={{ fontSize: 14, color: dark ? '#d1d5db' : '#1f2937' }}>{value}</Text>
     </View>
   )
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  // Guard: only render if there's something to show
   const kids = React.Children.toArray(children).filter(Boolean)
   if (kids.length === 0) return null
   return (
@@ -419,6 +420,15 @@ function TransportCard({ transport }: { transport: Transport }) {
 // ── Main DetailCard ─────────────────────────────────────────────────────────
 
 export default function DetailCard({ item, onClose, onEdit, onDelete }: Props) {
+  const colorScheme = useColorScheme()
+  const dark = colorScheme === 'dark'
+  const bg = dark ? '#030712' : '#ffffff'
+  const border = dark ? '#1f2937' : '#f3f4f6'
+  const labelColor = dark ? '#9ca3af' : '#9ca3af'
+  const titleColor = dark ? '#f9fafb' : '#111827'
+  const bodyColor = dark ? '#d1d5db' : '#1f2937'
+  const mutedColor = dark ? '#6b7280' : '#6b7280'
+
   return (
     <Modal
       visible={item !== null}
@@ -426,7 +436,7 @@ export default function DetailCard({ item, onClose, onEdit, onDelete }: Props) {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <View style={{ flex: 1, backgroundColor: bg }}>
         {/* Drag handle */}
         <View style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 4 }}>
           <View
@@ -448,14 +458,14 @@ export default function DetailCard({ item, onClose, onEdit, onDelete }: Props) {
             paddingHorizontal: 20,
             paddingVertical: 16,
             borderBottomWidth: 1,
-            borderBottomColor: '#f3f4f6',
+            borderBottomColor: border,
           }}
         >
           <Text
             style={{
               fontSize: 11,
               fontWeight: '600',
-              color: '#9ca3af',
+              color: labelColor,
               textTransform: 'uppercase',
               letterSpacing: 0.8,
             }}
@@ -510,7 +520,7 @@ export default function DetailCard({ item, onClose, onEdit, onDelete }: Props) {
             paddingHorizontal: 20,
             paddingVertical: 16,
             borderTopWidth: 1,
-            borderTopColor: '#f3f4f6',
+            borderTopColor: border,
             flexDirection: 'row',
             gap: 12,
           }}

@@ -17,6 +17,7 @@ export default function RootLayout() {
           <Stack.Screen name="hotel-modal" options={{ presentation: 'formSheet', title: 'Hotel' }} />
           <Stack.Screen name="activity-modal" options={{ presentation: 'formSheet', title: 'Activity' }} />
           <Stack.Screen name="transport-modal" options={{ presentation: 'formSheet', title: 'Transport' }} />
+          <Stack.Screen name="trips-modal" options={{ presentation: 'formSheet', title: 'My Trips' }} />
           <Stack.Screen name="detail" options={{ presentation: 'pageSheet', headerShown: false }} />
         </Stack>
       </SafeAreaProvider>

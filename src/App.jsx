@@ -470,6 +470,13 @@ export default function App() {
                 <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
               </svg>
             </button>
+            {/* Auth button — mobile only (desktop version is in the right section) */}
+            <div className="sm:hidden flex-shrink-0">
+              <AuthButton user={user} onShowWelcome={() => {
+                localStorage.removeItem(GUEST_MODE_KEY)
+                setGuestMode(false)
+              }} />
+            </div>
             <h1 className="text-base font-medium text-gray-900 dark:text-gray-100 flex-shrink-0">Wayfar</h1>
             {/* Active trip name */}
             {activeTrip && (
@@ -535,8 +542,26 @@ export default function App() {
           <InlineDestinationCreator onAdd={handleInlineAdd} />
         ) : (
           <>
+            {/* Mobile section-jump nav */}
+            <div className="sm:hidden -mx-4 px-3 mb-5 flex gap-2 overflow-x-auto scrollbar-hide">
+              {[
+                { label: 'Timeline', id: 'sec-timeline' },
+                { label: 'Map', id: 'sec-map' },
+                { label: 'Hotels', id: 'sec-hotels', hide: hotels.length === 0 },
+                { label: 'Summary', id: 'sec-summary' },
+              ].filter(s => !s.hide).map(({ label, id }) => (
+                <button
+                  key={id}
+                  onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {/* Timeline */}
-            <section className="mb-12 -mx-4 sm:mx-0 px-4 sm:px-0">
+            <section id="sec-timeline" className="mb-12 -mx-4 sm:mx-0 px-4 sm:px-0">
               <Timeline
                 destinations={destinations}
                 activities={activities}
@@ -568,7 +593,7 @@ export default function App() {
             <WeatherWidget destinations={destinations} />
 
             {/* Map */}
-            <MapView destinations={destinations} dark={dark} />
+            <div id="sec-map"><MapView destinations={destinations} dark={dark} /></div>
 
             {/* Destinations + Packing list — side by side with drag-resize handle */}
             <div ref={twoColRef} className="flex flex-col lg:flex-row items-start mb-8">
@@ -675,7 +700,7 @@ export default function App() {
 
             {/* Hotel list */}
             {hotels.length > 0 && (
-              <section className="mb-8">
+              <section id="sec-hotels" className="mb-8">
                 <div className="flex items-center justify-between mb-3 cursor-pointer select-none" onClick={() => setHotelsOpen(o => !o)}>
                   <h2 className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
                     <BedIcon size={11} color="#9ca3af" /> Hotels
@@ -745,7 +770,7 @@ export default function App() {
             )}
 
             {/* Summary dashboard */}
-            <SummaryDashboard destinations={destinations} hotels={hotels} activities={activities} transports={transports} currency={tripCurrency} onCurrencyChange={setCurrency} />
+            <div id="sec-summary"><SummaryDashboard destinations={destinations} hotels={hotels} activities={activities} transports={transports} currency={tripCurrency} onCurrencyChange={setCurrency} /></div>
           </>
         )}
       </main>

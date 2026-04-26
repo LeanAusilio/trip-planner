@@ -207,6 +207,7 @@ export default function Timeline({
   const [hoverId, setHoverId] = useState(null)
   const [hoverHotelId, setHoverHotelId] = useState(null)
   const [hoverTransportId, setHoverTransportId] = useState(null)
+  const [showHint, setShowHint] = useState(() => !localStorage.getItem('wayfar-timeline-hint-seen'))
 
   const { startDate, endDate } = computeRange(destinations, hotels, transports)
   const totalDays = differenceInDays(endDate, startDate) + 1
@@ -215,6 +216,16 @@ export default function Timeline({
   const todayOffset = differenceInDays(today, startDate)
 
   const activityMap = useMemo(() => groupActivities(activities), [activities])
+
+  // Dismiss onboarding hint after 6 seconds
+  useEffect(() => {
+    if (!showHint) return
+    const t = setTimeout(() => {
+      setShowHint(false)
+      localStorage.setItem('wayfar-timeline-hint-seen', '1')
+    }, 6000)
+    return () => clearTimeout(t)
+  }, [showHint])
 
   // Scroll to show today on mount
   const scrollToToday = () => {
@@ -329,7 +340,16 @@ export default function Timeline({
   const canvasH = HEADER_H + destTotalH + hotelTotalH + transportTotalH + 8
 
   return (
-    <div>
+    <div className="relative">
+      {/* First-time onboarding hint */}
+      {showHint && destinations.length > 0 && (
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 mb-2 pointer-events-none">
+          <div className="flex items-center gap-2 bg-gray-900/90 dark:bg-gray-100/90 text-white dark:text-gray-900 text-xs rounded-full px-4 py-2 shadow-lg animate-pulse-once whitespace-nowrap">
+            <span>✦</span>
+            <span>Drag bars to reschedule · tap to view details</span>
+          </div>
+        </div>
+      )}
       {/* Zoom controls */}
       <div className="flex items-center gap-1 mb-2 justify-end">
         <button

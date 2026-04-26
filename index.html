@@ -40,6 +40,14 @@
       window.addEventListener('unhandledrejection', function(e) {
         showCrash('Unhandled promise rejection:\n' + (e.reason && (e.reason.stack || e.reason.toString ? e.reason.toString() : '') || String(e.reason)));
       });
+      // When a new service worker takes control, reload so fresh JS chunks are served.
+      // Without this, autoUpdate can serve new HTML pointing to chunk hashes that
+      // aren't in the old cached bundle, causing "Script error. (:0)" on iOS Safari.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+          window.location.reload();
+        });
+      }
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

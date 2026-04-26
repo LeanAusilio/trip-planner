@@ -29,6 +29,7 @@ const TRANSPORT_GAP  = 12
 const HEADER_H       = 52
 
 const ZOOM_LEVELS = [18, 24, 36, 48, 64]
+const ZOOM_LABELS = ['Day', '3 day', 'Week', '2 wk', 'Month']
 
 function computeRange(destinations, hotels, transports) {
   const today = startOfDay(new Date())
@@ -59,9 +60,10 @@ function groupActivities(activities) {
 
 /** Small activity pin — colored circle with white icon */
 function ActivityPin({ activity, x, dayWidth, onEdit, onDelete, onSelect }) {
-  const [hovered, setHovered] = useState(false)
+  const [active, setActive] = useState(false)
   const cfg = ACTIVITY_CONFIG[activity.type]
   const PIN_SIZE = 24
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
   return (
     <div
@@ -71,14 +73,21 @@ function ActivityPin({ activity, x, dayWidth, onEdit, onDelete, onSelect }) {
         top: 3,
         width: PIN_SIZE,
         height: PIN_SIZE,
-        zIndex: hovered ? 20 : 2,
+        zIndex: active ? 20 : 2,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => !isTouch && setActive(true)}
+      onMouseLeave={() => !isTouch && setActive(false)}
     >
       {/* Circle */}
       <div
-        onClick={() => onSelect?.(activity)}
+        onClick={(e) => {
+          if (isTouch) {
+            e.stopPropagation()
+            setActive((a) => !a)
+          } else {
+            onSelect?.(activity)
+          }
+        }}
         style={{
           width: PIN_SIZE,
           height: PIN_SIZE,
@@ -88,15 +97,15 @@ function ActivityPin({ activity, x, dayWidth, onEdit, onDelete, onSelect }) {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          boxShadow: hovered ? `0 2px 8px ${cfg.color}55` : 'none',
+          boxShadow: active ? `0 2px 8px ${cfg.color}55` : 'none',
           transition: 'box-shadow 0.15s',
         }}
       >
         <ActivityIcon type={activity.type} size={13} />
       </div>
 
-      {/* Tooltip */}
-      {hovered && (
+      {/* Tooltip — desktop hover only */}
+      {active && !isTouch && (
         <div
           style={{
             position: 'absolute',
@@ -125,8 +134,8 @@ function ActivityPin({ activity, x, dayWidth, onEdit, onDelete, onSelect }) {
         </div>
       )}
 
-      {/* Edit/delete on hover */}
-      {hovered && (
+      {/* Edit/delete — hover on desktop, tap-toggle on touch */}
+      {active && (
         <div
           style={{
             position: 'absolute',
@@ -134,23 +143,25 @@ function ActivityPin({ activity, x, dayWidth, onEdit, onDelete, onSelect }) {
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex',
-            gap: 3,
+            gap: 4,
             zIndex: 30,
             pointerEvents: 'auto',
           }}
         >
           <button
-            onClick={() => onEdit(activity)}
+            onClick={(e) => { e.stopPropagation(); onEdit(activity) }}
             style={{
-              fontSize: 10, background: 'white', border: '1px solid #e5e7eb',
-              borderRadius: 4, padding: '2px 5px', cursor: 'pointer', color: '#6b7280',
+              fontSize: 11, background: 'white', border: '1px solid #e5e7eb',
+              borderRadius: 6, padding: '6px 10px', cursor: 'pointer', color: '#6b7280',
+              minWidth: 44, minHeight: 32,
             }}
           >Edit</button>
           <button
-            onClick={() => onDelete(activity.id)}
+            onClick={(e) => { e.stopPropagation(); onDelete(activity.id) }}
             style={{
-              fontSize: 10, background: 'white', border: '1px solid #fecaca',
-              borderRadius: 4, padding: '2px 5px', cursor: 'pointer', color: '#f87171',
+              fontSize: 11, background: 'white', border: '1px solid #fecaca',
+              borderRadius: 6, padding: '6px 10px', cursor: 'pointer', color: '#f87171',
+              minWidth: 44, minHeight: 32,
             }}
           >✕</button>
         </div>
@@ -329,12 +340,15 @@ export default function Timeline({
         <button
           onClick={() => setZoomIdx(i => Math.max(0, i - 1))}
           disabled={zoomIdx === 0}
-          className="w-7 h-7 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-30"
+          className="w-9 h-9 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-30"
         >−</button>
+        <span className="text-xs text-gray-400 dark:text-gray-600 w-10 text-center select-none tabular-nums">
+          {ZOOM_LABELS[zoomIdx]}
+        </span>
         <button
           onClick={() => setZoomIdx(i => Math.min(ZOOM_LEVELS.length - 1, i + 1))}
           disabled={zoomIdx === ZOOM_LEVELS.length - 1}
-          className="w-7 h-7 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-30"
+          className="w-9 h-9 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-30"
         >+</button>
       </div>
 

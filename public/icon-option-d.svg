@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: deep navy, same as option B -->
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+
+  <!--
+    W corners left→right:
+      1: (96,  148)  — plain start, no decoration
+      2: (182, 348)  — destination dot
+      3: (256, 148)  — destination dot
+      4: (330, 348)  — destination dot
+      5: (416, 148)  — two-line arrowhead
+
+    Cubic bezier control points chosen so the arms arrive/depart
+    at ~60° above/below horizontal, giving a natural curved W.
+    The last segment (4→5) has CP2=(386,204) so the line arrives
+    at corner 5 in direction (30,−56), i.e. ~62° above horizontal.
+  -->
+  <path
+    d="M 96,148
+       C 126,204 150,348 182,348
+       C 212,348 224,148 256,148
+       C 288,148 300,348 330,348
+       C 362,348 386,204 416,148"
+    stroke="#0ea5e9"
+    stroke-width="20"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  <!-- Destination dots at corners 2, 3, 4 — outer ring + navy centre for contrast -->
+  <circle cx="182" cy="348" r="20" fill="#0ea5e9"/>
+  <circle cx="182" cy="348" r="8"  fill="#0f172a"/>
+  <circle cx="256" cy="148" r="20" fill="#0ea5e9"/>
+  <circle cx="256" cy="148" r="8"  fill="#0f172a"/>
+  <circle cx="330" cy="348" r="20" fill="#0ea5e9"/>
+  <circle cx="330" cy="348" r="8"  fill="#0f172a"/>
+
+  <!--
+    Two-line arrowhead at corner 5 (416, 148).
+    Travel direction of last bezier at its endpoint:
+      CP2=(386,204) → end=(416,148): vector=(30,−56)
+      unit ≈ (0.472, −0.882), angle ≈ 62° above horizontal.
+
+    Each wing is the backward direction (−0.472, 0.882) rotated ±30°,
+    scaled to 44px:
+      Wing A (+30°): endpoint ≈ (378, 167)  — goes left-down
+      Wing B (−30°): endpoint ≈ (417, 192)  — goes nearly straight down
+  -->
+  <line x1="416" y1="148" x2="378" y2="167" stroke="#0ea5e9" stroke-width="20" stroke-linecap="round"/>
+  <line x1="416" y1="148" x2="417" y2="192" stroke="#0ea5e9" stroke-width="20" stroke-linecap="round"/>
+</svg>

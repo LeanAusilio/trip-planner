@@ -130,7 +130,7 @@ export default function DateRangePicker({ from, to, onChange, minDate = null }) 
           return (
             <div
               key={i}
-              className="relative flex items-center justify-center h-8"
+              className="relative flex items-center justify-center h-11"
               onMouseEnter={() => !disabled && picking === 'to' && from && setHovered(day)}
               onMouseLeave={() => setHovered(null)}
             >

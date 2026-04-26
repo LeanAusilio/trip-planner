@@ -24,6 +24,7 @@ import { createDemoTrips } from './lib/demoData'
 import { Flag } from './components/CitySearch'
 import { ACTIVITY_CONFIG, ActivityIcon, BedIcon, TRANSPORT_CONFIG, TransportIcon, PlaneIcon, SuitcaseIcon } from './components/Icons'
 import HeaderMenus from './components/HeaderMenus'
+import MobileBottomBar from './components/MobileBottomBar'
 import TravelStats from './components/TravelStats'
 import AuthButton from './components/AuthButton'
 import WelcomeScreen from './components/WelcomeScreen'
@@ -462,7 +463,7 @@ export default function App() {
             {/* Sidebar toggle */}
             <button
               onClick={() => setSidebarOpen((o) => !o)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500 flex-shrink-0"
+              className="w-11 h-11 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500 flex-shrink-0"
               title="Trips"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -529,7 +530,7 @@ export default function App() {
       </header>
 
       {/* ── Main ── */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8 dark:text-gray-100">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-24 sm:pb-8 dark:text-gray-100">
         {!hasData ? (
           <InlineDestinationCreator onAdd={handleInlineAdd} />
         ) : (
@@ -783,7 +784,7 @@ export default function App() {
         <ExportModal destinations={destinations} hotels={hotels} activities={activities} onClose={() => setShowExport(false)} />
       )}
       {showQuickStart && (
-        <QuickStartModal onComplete={addTripWithData} onClose={() => setShowQuickStart(false)} />
+        <QuickStartModal dark={dark} onComplete={addTripWithData} onClose={() => setShowQuickStart(false)} />
       )}
       {showCollab && (
         <CollaborationModal
@@ -807,16 +808,30 @@ export default function App() {
       )}
       <DetailCard item={selectedItem} onClose={() => setSelectedItem(null)} onEdit={handleDetailEdit} />
 
-      {/* Mobile FAB — add destination */}
-      <button
-        onClick={() => setModal({ type: 'destination', editing: null })}
-        className="sm:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-sky-500 text-white text-3xl shadow-lg flex items-center justify-center hover:bg-sky-600 active:scale-95 transition-all"
-        aria-label="Add destination"
-      >+</button>
+      {/* Mobile bottom action bar */}
+      <MobileBottomBar
+        hasData={hasData}
+        dark={dark}
+        onToggleDark={() => setDark((d) => !d)}
+        onTravelStats={() => setShowStats(true)}
+        onAddDestination={() => setModal({ type: 'destination', editing: null })}
+        onAddTransport={() => setModal({ type: 'transport', editing: null })}
+        onAddHotel={() => setModal({ type: 'hotel', editing: null })}
+        onAddActivity={() => setModal({ type: 'activity', editing: null, context: destinations[0] ?? null })}
+        onImportBooking={() => setShowBookingImport(true)}
+        onExport={() => setShowExport(true)}
+        onSummaryPDF={() => openTripSummaryPrint({ name: activeTrip?.name, destinations, hotels, activities, transports })}
+        onCopyShareLink={handleCopyShareLink}
+        onWhatsApp={() => shareToWhatsApp(activeTrip)}
+        onInstagram={() => exportTripCard(destinations, activeTrip?.name)}
+        onShare={() => setShowCollab(true)}
+        isCollaborating={collab.isCollaborating}
+        syncStatus={collab.syncStatus}
+      />
 
       {/* Undo toast */}
       {undoVisible && (
-        <div className="fixed bottom-24 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm rounded-xl px-4 py-2.5 shadow-lg">
+        <div className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm rounded-xl px-4 py-2.5 shadow-lg">
           <span>Move applied</span>
           <button onClick={handleUndo} className="font-semibold underline">Undo</button>
           <button onClick={() => setUndoVisible(false)} className="opacity-50 hover:opacity-100 ml-1">✕</button>

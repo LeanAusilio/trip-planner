@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { ActivityIcon, BedIcon, TransportIcon } from './Icons'
 
-function DropdownMenu({ label, items, align = 'right', accent = false }) {
+export function DropdownMenu({ label, items, align = 'right', accent = false, direction = 'down', triggerClassName }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -21,22 +21,28 @@ function DropdownMenu({ label, items, align = 'right', accent = false }) {
     }
   }, [open])
 
+  const defaultTriggerClass = `w-8 h-8 flex items-center justify-center rounded-full border transition-colors text-sm font-medium ${
+    accent
+      ? 'bg-sky-500 border-sky-500 text-white hover:bg-sky-600 hover:border-sky-600 dark:bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-500'
+      : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+  }`
+
+  const panelPositionClass = direction === 'up'
+    ? `bottom-full mb-1.5 ${align === 'right' ? 'right-0' : 'left-0'}`
+    : `top-full mt-1.5 ${align === 'right' ? 'right-0' : 'left-0'}`
+
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors text-sm font-medium ${
-          accent
-            ? 'bg-sky-500 border-sky-500 text-white hover:bg-sky-600 hover:border-sky-600 dark:bg-sky-600 dark:border-sky-600 dark:hover:bg-sky-500'
-            : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-        }`}
+        className={triggerClassName ?? defaultTriggerClass}
         aria-expanded={open}
       >
         {label}
       </button>
       {open && (
         <div
-          className={`absolute top-full mt-1.5 w-52 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 py-1 ${align === 'right' ? 'right-0' : 'left-0'}`}
+          className={`absolute w-52 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 py-1 ${panelPositionClass}`}
         >
           {items.map((item, idx) =>
             item.divider ? (

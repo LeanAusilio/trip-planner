@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: sky-blue squircle -->
+  <rect width="512" height="512" rx="112" fill="#0ea5e9"/>
+
+  <!-- W: four curved arms, each ending in an arrowhead, dots at outer tips -->
+  <!-- The W sits in a 320×220 bounding box centred at (256, 270) -->
+  <!-- Points: TL(96,150)  TR(416,150)  ML(176,330)  MR(336,330)  BOT(256,150) -->
+
+  <!-- Curved strokes for W (left arm down-left, left arm up-right, right arm down-left, right arm up-right) -->
+  <!-- Left outer arm: TL → ML -->
+  <path d="M 108 148 Q 132 270 176 322" stroke="white" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <!-- Left inner arm: ML → centre valley -->
+  <path d="M 176 322 Q 216 200 256 152" stroke="white" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <!-- Right inner arm: centre valley → MR -->
+  <path d="M 256 152 Q 296 200 336 322" stroke="white" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <!-- Right outer arm: MR → TR -->
+  <path d="M 336 322 Q 380 270 404 148" stroke="white" stroke-width="28" stroke-linecap="round" fill="none"/>
+
+  <!-- Arrowhead at bottom-left tip (ML) pointing down-left -->
+  <polygon points="176,322 148,368 202,358" fill="white"/>
+  <!-- Arrowhead at bottom-right tip (MR) pointing down-right -->
+  <polygon points="336,322 364,368 310,358" fill="white"/>
+
+  <!-- Corner dots (outer tips) -->
+  <circle cx="108" cy="148" r="22" fill="white"/>
+  <circle cx="404" cy="148" r="22" fill="white"/>
+  <!-- Centre valley dot -->
+  <circle cx="256" cy="152" r="16" fill="white" opacity="0.7"/>
+</svg>

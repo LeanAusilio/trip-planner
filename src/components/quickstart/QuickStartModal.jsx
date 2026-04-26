@@ -15,7 +15,7 @@ const emptyActivity = () => ({ name: '', type: 'attraction', date: '' })
 
 const isDestValid = (d) => d.city && d.arrival && d.departure && d.departure >= d.arrival
 
-export default function QuickStartModal({ onComplete, onClose }) {
+export default function QuickStartModal({ onComplete, onClose, dark = false }) {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
     name:             '',
@@ -71,7 +71,7 @@ export default function QuickStartModal({ onComplete, onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
       data-testid="quickstart-modal"
     >
-      <div className="qs-modal bg-[#1C1C20] rounded-2xl w-full max-w-xl flex flex-col gap-7 p-10">
+      <div className={`qs-modal rounded-2xl w-full max-w-xl flex flex-col gap-7 p-10 ${dark ? 'bg-[#1C1C20]' : 'bg-[#2A2A30]'}`}>
 
         <div key={step} className="qs-step">
           {step === 0 && <StepName value={form.name} onChange={(v) => update('name', v)} />}

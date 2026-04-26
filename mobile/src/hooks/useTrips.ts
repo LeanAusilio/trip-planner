@@ -141,8 +141,8 @@ export function useTrips() {
   }, [])
 
   const loadDemoData = useCallback(() => {
-    const demoTrips = createDemoTrips()
-    setTrips(demoTrips as Trip[])
+    const demoTrips = createDemoTrips().map((t: any) => makeTrip(t.name, t))
+    setTrips(demoTrips)
     setActiveTripId(demoTrips[0]?.id || null)
   }, [])
 

@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router'
 import { useTrips } from '../../src/hooks/useTrips'
 import ItineraryList from '../../src/components/ItineraryList'
 import DetailCard from '../../src/components/DetailCard'
+import { shareToWhatsApp, exportTripAsICS, printTrip } from '../../src/utils/share'
 import type { Destination, Hotel, Activity, Transport } from '../../src/types/trip'
 
 type SelectedItem =
@@ -33,6 +34,7 @@ export default function TripScreen() {
 
   const [selectedItem, setSelectedItem] = useState<SelectedItem>(null)
   const [showAddMenu, setShowAddMenu] = useState(false)
+  const [showShareMenu, setShowShareMenu] = useState(false)
 
   const destinations = activeTrip?.destinations || []
   const hotels = activeTrip?.hotels || []
@@ -99,17 +101,27 @@ export default function TripScreen() {
         <View className="flex-row items-center justify-between">
           <Text className="text-sky-500 font-bold text-xl">Wayfar</Text>
           <Text
-            className="text-gray-900 dark:text-white font-semibold text-sm flex-1 text-center mx-4"
+            className="text-gray-900 dark:text-white font-semibold text-sm flex-1 text-center mx-2"
             numberOfLines={1}
           >
             {activeTrip?.name || 'My Trip'}
           </Text>
-          <Pressable
-            onPress={() => setShowAddMenu(true)}
-            className="w-9 h-9 bg-sky-500 rounded-full items-center justify-center"
-          >
-            <Text className="text-white text-2xl font-light" style={{ lineHeight: 28 }}>+</Text>
-          </Pressable>
+          <View className="flex-row gap-2">
+            {activeTrip && activeTrip.destinations.length > 0 && (
+              <Pressable
+                onPress={() => setShowShareMenu(true)}
+                className="w-9 h-9 bg-gray-100 dark:bg-gray-800 rounded-full items-center justify-center"
+              >
+                <Text style={{ fontSize: 16 }}>↑</Text>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => setShowAddMenu(true)}
+              className="w-9 h-9 bg-sky-500 rounded-full items-center justify-center"
+            >
+              <Text className="text-white text-2xl font-light" style={{ lineHeight: 28 }}>+</Text>
+            </Pressable>
+          </View>
         </View>
 
         {trips.length > 1 && (
@@ -233,6 +245,51 @@ export default function TripScreen() {
 
             <Pressable
               onPress={() => setShowAddMenu(false)}
+              className="mt-3 py-3 items-center"
+            >
+              <Text className="text-sky-500 font-medium">Cancel</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* ── Share Menu ── */}
+      <Modal
+        visible={showShareMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowShareMenu(false)}
+      >
+        <Pressable
+          className="flex-1 bg-black/40 justify-end"
+          onPress={() => setShowShareMenu(false)}
+        >
+          <Pressable
+            className="bg-white dark:bg-gray-900 rounded-t-3xl px-4 pt-4"
+            style={{ paddingBottom: insets.bottom + 16 }}
+            onPress={() => {}}
+          >
+            <View className="items-center mb-4">
+              <View className="w-8 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
+            </View>
+            <Text className="text-base font-semibold text-gray-900 dark:text-white mb-4 px-2">
+              Share & Export
+            </Text>
+            {[
+              { label: '💬 Share via WhatsApp', action: () => activeTrip && shareToWhatsApp(activeTrip) },
+              { label: '📅 Export to Calendar (.ics)', action: () => activeTrip && exportTripAsICS(activeTrip) },
+              { label: '🖨️ Print / Save as PDF', action: () => activeTrip && printTrip(activeTrip) },
+            ].map((opt) => (
+              <Pressable
+                key={opt.label}
+                onPress={() => { setShowShareMenu(false); opt.action() }}
+                className="flex-row items-center py-4 px-2 border-b border-gray-50 dark:border-gray-800"
+              >
+                <Text className="text-base text-gray-900 dark:text-white">{opt.label}</Text>
+              </Pressable>
+            ))}
+            <Pressable
+              onPress={() => setShowShareMenu(false)}
               className="mt-3 py-3 items-center"
             >
               <Text className="text-sky-500 font-medium">Cancel</Text>

@@ -3,6 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTrips } from '../src/hooks/useTrips'
+import DatePickerField from '../src/components/DatePickerField'
 import type { Transport } from '../src/types/trip'
 
 type TransportType = 'flight' | 'train' | 'bus' | 'car' | 'ferry' | 'other'
@@ -136,27 +137,21 @@ export default function TransportModalScreen() {
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Departure date
         </Text>
-        <TextInput
+        <DatePickerField
           value={departureDate}
-          onChangeText={(t) => { setDepartureDate(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setDepartureDate(d); setError('') }}
+          placeholder="Select departure date"
+          maxDate={arrivalDate || undefined}
         />
 
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Arrival date
         </Text>
-        <TextInput
+        <DatePickerField
           value={arrivalDate}
-          onChangeText={(t) => { setArrivalDate(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setArrivalDate(d); setError('') }}
+          placeholder="Select arrival date"
+          minDate={departureDate || undefined}
         />
 
         {/* Carrier */}

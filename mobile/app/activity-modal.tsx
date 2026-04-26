@@ -3,6 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTrips } from '../src/hooks/useTrips'
+import DatePickerField from '../src/components/DatePickerField'
 import type { Activity } from '../src/types/trip'
 
 type ActivityType = 'restaurant' | 'attraction' | 'shopping' | 'medical'
@@ -118,14 +119,10 @@ export default function ActivityModalScreen() {
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Date
         </Text>
-        <TextInput
+        <DatePickerField
           value={date}
-          onChangeText={(t) => { setDate(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setDate(d); setError('') }}
+          placeholder="Select date"
         />
 
         {/* Destination */}

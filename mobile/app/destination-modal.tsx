@@ -1,9 +1,10 @@
-import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTrips } from '../src/hooks/useTrips'
 import CitySearch from '../src/components/CitySearch'
+import DatePickerField from '../src/components/DatePickerField'
 import type { Destination } from '../src/types/trip'
 
 export default function DestinationModalScreen() {
@@ -14,19 +15,24 @@ export default function DestinationModalScreen() {
 
   const { activeTrip, addDestination, updateDestination } = useTrips()
 
+  // Smart default: pre-fill arrival from last destination's departure
+  const lastDeparture = !editing && activeTrip?.destinations?.length
+    ? [...activeTrip.destinations].sort((a, b) => a.departure < b.departure ? 1 : -1)[0].departure.slice(0, 10)
+    : ''
+
   const [city, setCity] = useState<any>(editing ? {
     city: editing.city, country: editing.country,
     countryCode: editing.countryCode, lat: editing.lat, lng: editing.lng
   } : null)
-  const [arrival, setArrival] = useState(editing?.arrival?.slice(0, 10) || '')
+  const [arrival, setArrival] = useState(editing?.arrival?.slice(0, 10) || lastDeparture)
   const [departure, setDeparture] = useState(editing?.departure?.slice(0, 10) || '')
   const [type, setType] = useState<'vacation' | 'business'>(editing?.type || 'vacation')
   const [error, setError] = useState('')
 
   const handleSave = () => {
     if (!city) { setError('Please select a city'); return }
-    if (!arrival) { setError('Please enter arrival date (YYYY-MM-DD)'); return }
-    if (!departure) { setError('Please enter departure date (YYYY-MM-DD)'); return }
+    if (!arrival) { setError('Please select an arrival date'); return }
+    if (!departure) { setError('Please select a departure date'); return }
     if (arrival >= departure) { setError('Departure must be after arrival'); return }
 
     const destData = {
@@ -82,28 +88,22 @@ export default function DestinationModalScreen() {
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Arrival date
         </Text>
-        <TextInput
+        <DatePickerField
           value={arrival}
-          onChangeText={(t) => { setArrival(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setArrival(d); setError('') }}
+          placeholder="Select arrival date"
+          maxDate={departure || undefined}
         />
 
         {/* Departure */}
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Departure date
         </Text>
-        <TextInput
+        <DatePickerField
           value={departure}
-          onChangeText={(t) => { setDeparture(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setDeparture(d); setError('') }}
+          placeholder="Select departure date"
+          minDate={arrival || undefined}
         />
 
         {/* Type toggle */}
@@ -130,9 +130,7 @@ export default function DestinationModalScreen() {
           ))}
         </View>
 
-        {error ? (
-          <Text className="text-red-500 text-sm mt-4">{error}</Text>
-        ) : null}
+        {error ? <Text className="text-red-500 text-sm mt-4">{error}</Text> : null}
 
         <Pressable
           onPress={handleSave}

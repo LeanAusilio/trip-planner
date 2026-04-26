@@ -3,6 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTrips } from '../src/hooks/useTrips'
+import DatePickerField from '../src/components/DatePickerField'
 import type { Hotel } from '../src/types/trip'
 
 export default function HotelModalScreen() {
@@ -11,11 +12,16 @@ export default function HotelModalScreen() {
   const params = useLocalSearchParams()
   const editing: Hotel | null = params.editing ? JSON.parse(params.editing as string) : null
 
-  const { addHotel, updateHotel } = useTrips()
+  const { activeTrip, addHotel, updateHotel } = useTrips()
+
+  // Smart default: pre-fill from active/last destination
+  const lastDest = activeTrip?.destinations?.length
+    ? [...activeTrip.destinations].sort((a, b) => a.departure < b.departure ? 1 : -1)[0]
+    : null
 
   const [name, setName] = useState(editing?.name || '')
-  const [checkIn, setCheckIn] = useState(editing?.checkIn?.slice(0, 10) || '')
-  const [checkOut, setCheckOut] = useState(editing?.checkOut?.slice(0, 10) || '')
+  const [checkIn, setCheckIn] = useState(editing?.checkIn?.slice(0, 10) || (!editing && lastDest?.arrival?.slice(0, 10)) || '')
+  const [checkOut, setCheckOut] = useState(editing?.checkOut?.slice(0, 10) || (!editing && lastDest?.departure?.slice(0, 10)) || '')
   const [address, setAddress] = useState(editing?.address || '')
   const [confirmationNumber, setConfirmationNumber] = useState(editing?.confirmationNumber || '')
   const [error, setError] = useState('')
@@ -78,28 +84,22 @@ export default function HotelModalScreen() {
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Check-in date
         </Text>
-        <TextInput
+        <DatePickerField
           value={checkIn}
-          onChangeText={(t) => { setCheckIn(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setCheckIn(d); setError('') }}
+          placeholder="Select check-in date"
+          maxDate={checkOut || undefined}
         />
 
         {/* Check-out */}
         <Text className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-5 mb-2">
           Check-out date
         </Text>
-        <TextInput
+        <DatePickerField
           value={checkOut}
-          onChangeText={(t) => { setCheckOut(t); setError('') }}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
-          className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white"
-          keyboardType="numbers-and-punctuation"
-          maxLength={10}
+          onChange={(d) => { setCheckOut(d); setError('') }}
+          placeholder="Select check-out date"
+          minDate={checkIn || undefined}
         />
 
         {/* Address */}

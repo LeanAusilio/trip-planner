@@ -100,12 +100,15 @@ export default function TripScreen() {
       <View className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 px-4 pt-2 pb-3">
         <View className="flex-row items-center justify-between">
           <Text className="text-sky-500 font-bold text-xl">Wayfar</Text>
-          <Text
-            className="text-gray-900 dark:text-white font-semibold text-sm flex-1 text-center mx-2"
-            numberOfLines={1}
+          <Pressable
+            onPress={() => router.push('/trips-modal')}
+            className="flex-1 items-center mx-2"
           >
-            {activeTrip?.name || 'My Trip'}
-          </Text>
+            <Text className="text-gray-900 dark:text-white font-semibold text-sm" numberOfLines={1}>
+              {activeTrip?.name || 'My Trip'}
+            </Text>
+            <Text className="text-gray-400 dark:text-gray-500 text-xs" style={{ lineHeight: 12 }}>▾</Text>
+          </Pressable>
           <View className="flex-row gap-2">
             {activeTrip && activeTrip.destinations.length > 0 && (
               <Pressable

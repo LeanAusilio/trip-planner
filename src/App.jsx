@@ -28,7 +28,7 @@ import MobileBottomBar from './components/MobileBottomBar'
 import TravelStats from './components/TravelStats'
 import AuthButton from './components/AuthButton'
 import WelcomeScreen from './components/WelcomeScreen'
-import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl } from './utils/share'
+import { shareToWhatsApp, exportTripCard, copyTripShareLink, deserializeTripFromUrl, loadSharedTrip, getSharedTripCode } from './utils/share'
 import { openTripSummaryPrint } from './utils/export'
 import { supabase } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
@@ -122,6 +122,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ trips, activeTripId }))
   }, [trips, activeTripId])
+
+  useEffect(() => {
+    const code = getSharedTripCode()
+    if (!code) return
+    loadSharedTrip(code).then(trip => {
+      if (trip) setSharedTrip(trip)
+    })
+  }, [])
 
   const { deleteFromCloud } = useCloudSync({ userId: user?.id, trips, setTrips, setActiveTripId })
 

@@ -25,6 +25,7 @@ interface Props {
   item: SelectedItem
   onClose: () => void
   onEdit?: () => void
+  onDelete?: () => void
 }
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
@@ -417,7 +418,7 @@ function TransportCard({ transport }: { transport: Transport }) {
 
 // ── Main DetailCard ─────────────────────────────────────────────────────────
 
-export default function DetailCard({ item, onClose, onEdit }: Props) {
+export default function DetailCard({ item, onClose, onEdit, onDelete }: Props) {
   return (
     <Modal
       visible={item !== null}
@@ -510,8 +511,26 @@ export default function DetailCard({ item, onClose, onEdit }: Props) {
             paddingVertical: 16,
             borderTopWidth: 1,
             borderTopColor: '#f3f4f6',
+            flexDirection: 'row',
+            gap: 12,
           }}
         >
+          {onDelete && (
+            <Pressable
+              onPress={onDelete}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.85 : 1,
+                backgroundColor: '#fee2e2',
+                borderRadius: 12,
+                paddingVertical: 12,
+                alignItems: 'center',
+                flex: 1,
+              })}
+              accessibilityLabel="Delete"
+            >
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#ef4444' }}>Delete</Text>
+            </Pressable>
+          )}
           <Pressable
             onPress={onEdit}
             style={({ pressed }) => ({
@@ -520,6 +539,10 @@ export default function DetailCard({ item, onClose, onEdit }: Props) {
               borderRadius: 12,
               paddingVertical: 12,
               alignItems: 'center',
+              flex: onDelete ? 1 : undefined,
+              paddingHorizontal: onDelete ? undefined : 32,
+              alignSelf: onDelete ? undefined : 'stretch',
+              width: onDelete ? undefined : '100%',
             })}
             accessibilityLabel="Edit"
           >
